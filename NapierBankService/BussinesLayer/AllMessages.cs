@@ -37,14 +37,10 @@ namespace NapierBankService
             get { return message; }
 
             set
-            {
+            {             
 
-
-                if ((value.Length > 0) && (value.Length < 141))
                     message = value;
-                else
-
-                    throw new ArgumentException("message between 0 and 140 characters, try again.");
+            
 
             }
         }
@@ -64,13 +60,13 @@ namespace NapierBankService
             }
         }      
 
-        public string Sms_phone
+        public string Sms_Phone
         {
             get { return sms_phone; }
             set
             {
-                if (!Regex.IsMatch(value, regex)) throw new ArgumentException("Incorrect phone number");
-                else sms_phone = value;
+               
+                 sms_phone = value;
             }
 
         }
@@ -90,10 +86,8 @@ namespace NapierBankService
             get { return email_subject; }
             set
             {
-                if ((value.Length < 21) && (value.Length > 0))
                     email_subject = value;
-                else
-                    throw new Exception("Subject can be a max of 20 characters.");
+                
             }
         }
        

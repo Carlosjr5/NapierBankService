@@ -5,21 +5,20 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:NapierBankService"
         mc:Ignorable="d"
-        Title="MainWindow" Height="450" Width="800">
+        Title="MainWindow" Height="500" Width="830">
     <Grid x:Name="upload" >
-        <TextBox x:Name="body_txtbox" HorizontalAlignment="Left" Height="98" Margin="93,261,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="231"/>
-        <TextBox x:Name="header_txtblock" HorizontalAlignment="Left" Height="37" Margin="93,103,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="144"/>
-        <Button x:Name="send_btn" Content="Button" HorizontalAlignment="Left" Height="42" Margin="654,382,0,0" VerticalAlignment="Top" Width="110" Click="send_btn_Click"/>
-        <ListBox x:Name="data_listbox" HorizontalAlignment="Left" Height="171" Margin="552,36,0,0" VerticalAlignment="Top" Width="128" MouseDoubleClick="ChoseItem"/>
-        <TextBox x:Name="user_txtbox" HorizontalAlignment="Left" Height="35" Margin="93,172,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="281"/>
-        <ListBox x:Name="mention_list" HorizontalAlignment="Left" Height="117" Margin="445,251,0,0" VerticalAlignment="Top" Width="127" MouseDoubleClick="TxtItem"/>
-        <Button Content="Button" HorizontalAlignment="Left" Margin="552,9,0,0" VerticalAlignment="Top" Width="128" Height="25" Click="Button_Click"/>
-        <ListBox x:Name="txt_list" Margin="282,16,282,283" MouseDoubleClick="TxtItem" />
-        <TextBox x:Name="subject_txtbox" HorizontalAlignment="Left" Height="31" Margin="93,225,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="231"/>
-        <Label Content="Subject:" HorizontalAlignment="Left" Height="28" Margin="41,225,0,0" VerticalAlignment="Top" Width="144"/>
-        <Label Content="Message:" HorizontalAlignment="Left" Height="28" Margin="37,258,0,0" VerticalAlignment="Top" Width="144"/>
-        <Label x:Name="Sender" Content="Sender:" HorizontalAlignment="Left" Height="25" Margin="41,172,0,0" VerticalAlignment="Top" Width="154"/>
-        <Label Content="ID:" HorizontalAlignment="Left" Height="25" Margin="69,104,0,0" VerticalAlignment="Top" Width="40"/>
+        <TextBox x:Name="body_txtbox" HorizontalAlignment="Left" Height="98" Margin="252,242,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="232"/>
+        <TextBlock x:Name="header_txtblock" HorizontalAlignment="Left" Height="36" Margin="247,92,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="144" Text="ID"/>
+        <Button x:Name="send_btn" Content="Send Message" HorizontalAlignment="Left" Height="58" Margin="624,262,0,0" VerticalAlignment="Top" Width="148" Click="send_btn_Click"/>
+        <ListBox x:Name="data_listbox" HorizontalAlignment="Left" Height="215" Margin="18,140,0,0" VerticalAlignment="Top" Width="140" MouseDoubleClick="ChoseItem"/>
+        <TextBox x:Name="user_txtbox" HorizontalAlignment="Left" Height="35" Margin="247,135,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="280"/>
+        <ListBox x:Name="mention_list" HorizontalAlignment="Left" Height="117" Margin="604,42,0,0" VerticalAlignment="Top" Width="128" MouseDoubleClick="TxtItem"/>
+        <Button Content="upload(.json or .txt)" HorizontalAlignment="Left" Margin="18,115,0,0" VerticalAlignment="Top" Width="140" Height="25" Click="Button_Click"/>
+        <ListBox x:Name="txt_list" Margin="18,358,12,10" MouseDoubleClick="TxtItem" />
+        <TextBox x:Name="subject_txtbox" HorizontalAlignment="Left" Height="31" Margin="247,184,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="369"/>
+        <Label Content="Subject:" HorizontalAlignment="Left" Height="28" Margin="189,184,0,0" VerticalAlignment="Top" Width="52"/>
+        <Label Content="Message:" HorizontalAlignment="Left" Height="28" Margin="183,242,0,0" VerticalAlignment="Top" Width="64"/>
+        <Label x:Name="Sender" Content="Sender:" HorizontalAlignment="Left" Height="25" Margin="186,140,0,0" VerticalAlignment="Top" Width="58"/>
 
     </Grid>
 </Window>
