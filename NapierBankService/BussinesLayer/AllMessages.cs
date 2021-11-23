@@ -64,9 +64,8 @@ namespace NapierBankService
         {
             get { return sms_phone; }
             set
-            {
-               
-                 sms_phone = value;
+            {              
+               sms_phone = value;
             }
 
         }

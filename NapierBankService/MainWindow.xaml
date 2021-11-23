@@ -5,11 +5,11 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:NapierBankService"
         mc:Ignorable="d"
-        Title="MainWindow" Height="500" Width="830">
+        Title="MainWindow" Height="500" Width="950">
     <Grid x:Name="upload" >
-        <TextBox x:Name="body_txtbox" HorizontalAlignment="Left" Height="98" Margin="252,242,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="232"/>
+        <TextBox x:Name="body_txtbox" HorizontalAlignment="Left" Height="98" Margin="252,242,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="364"/>
         <TextBlock x:Name="header_txtblock" HorizontalAlignment="Left" Height="36" Margin="247,92,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="144" Text="ID"/>
-        <Button x:Name="send_btn" Content="Send Message" HorizontalAlignment="Left" Height="58" Margin="624,262,0,0" VerticalAlignment="Top" Width="148" Click="send_btn_Click"/>
+        <Button x:Name="send_btn" Content="Send Message" HorizontalAlignment="Left" Height="58" Margin="624,283,0,0" VerticalAlignment="Top" Width="148" Click="send_btn_Click"/>
         <ListBox x:Name="data_listbox" HorizontalAlignment="Left" Height="215" Margin="18,140,0,0" VerticalAlignment="Top" Width="140" MouseDoubleClick="ChoseItem"/>
         <TextBox x:Name="user_txtbox" HorizontalAlignment="Left" Height="35" Margin="247,135,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="280"/>
         <ListBox x:Name="mention_list" HorizontalAlignment="Left" Height="117" Margin="604,42,0,0" VerticalAlignment="Top" Width="128" MouseDoubleClick="TxtItem"/>
@@ -19,6 +19,9 @@
         <Label Content="Subject:" HorizontalAlignment="Left" Height="28" Margin="189,184,0,0" VerticalAlignment="Top" Width="52"/>
         <Label Content="Message:" HorizontalAlignment="Left" Height="28" Margin="183,242,0,0" VerticalAlignment="Top" Width="64"/>
         <Label x:Name="Sender" Content="Sender:" HorizontalAlignment="Left" Height="25" Margin="186,140,0,0" VerticalAlignment="Top" Width="58"/>
+        <ListBox x:Name="hashtag_list" HorizontalAlignment="Left" Height="117" Margin="772,42,0,0" VerticalAlignment="Top" Width="135"/>
+        <Label x:Name="Hashtag_List" Content="Hashtag List:" HorizontalAlignment="Left" Height="27" Margin="794,11,0,0" VerticalAlignment="Top" Width="92"/>
+        <Label Content="Mention List:" HorizontalAlignment="Left" Height="23" Margin="624,12,0,0" VerticalAlignment="Top" Width="79"/>
 
     </Grid>
 </Window>
