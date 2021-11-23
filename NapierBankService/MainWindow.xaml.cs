@@ -39,8 +39,9 @@ namespace NapierBankService
         //AllMessages message = new AllMessages();
 
 
+        SendTWEET tweet = new SendTWEET();
 
-       
+
         List<SendSMS> sms = new List<SendSMS>();
 
         List<SendEMAIL> mail = new List<SendEMAIL>();
@@ -60,7 +61,7 @@ namespace NapierBankService
 
         public MainWindow()
         {
-            List<AllMessages> msgs = new List<AllMessages>();
+            
 
             InitializeComponent();
 
@@ -119,10 +120,7 @@ namespace NapierBankService
 
         }
         
-
-    
-        
-      
+           
 
 
 
@@ -135,18 +133,8 @@ namespace NapierBankService
             string mail_subject = subject_txtbox.Text;
             string numbers = new String(user.ToCharArray().Where(c => Char.IsDigit(c)).ToArray()); //checks if the input is only digits.         
 
-            //   string type_message = ngenerator.SMS_type(sms_message, "S");
-            //  string type_phone = ngenerator.SMS_type_PHONE(sms_phone_number, "S");
-
-           
-
-            generate newsms = new generate();
-
-
-
-          
+            generate newsms = new generate();       
                
-
 
                 if (message == "" || user == "")
                 {
@@ -177,18 +165,26 @@ namespace NapierBankService
 
 
                     });
-                               
 
+                      MessageBox.Show("Tweet Sent!");
 
-                }else if (!user.StartsWith("@")){
+                  if (msgs != null)
+                  {
+                    data_listbox.Items.Clear();
+                    foreach (var Data in msgs)
+                    {
 
-                      MessageBox.Show("Twitter user must start with '@'  and Phone numbers with '+' :), If you are sending and email DONT WORRY!, GREETINGS :)");
+                        data_listbox.Items.Add(Data.ID);
+                    }
+                  }
+
 
                 }
 
 
 
-                if (user.StartsWith("+") && user.Length <= 13 && user.Length >= 5)
+
+            if (user.StartsWith("+") && user.Length <= 13 && user.Length >= 5)
                 {
 
 
@@ -213,14 +209,23 @@ namespace NapierBankService
 
 
                         MessageBox.Show("SMS Sent!");
+                          if (msgs != null)
+                         {
+                              data_listbox.Items.Clear();
+                               foreach (var Data in msgs)
+                              {
+
+                                  data_listbox.Items.Add(Data.ID);
+                               }
+                          }
 
 
-                    }
+                }
                 }
 
 
 
-                if (user.Contains("@") && mail_subject != "")
+                if (user.Contains("@") && mail_subject != "" && !user.StartsWith("@"))
                 {
 
                  msgs = Serializing(msgs);
@@ -235,8 +240,8 @@ namespace NapierBankService
                         Email_address = newsms.Email_address(user, "E")
 
                     });
-                                 
-
+ 
+                     MessageBox.Show("Enail Sent!");
 
 
                 }
@@ -249,15 +254,15 @@ namespace NapierBankService
 
             if (msgs != null)
             {
-               // data_listbox.Items.Clear();
+                data_listbox.Items.Clear();
                 foreach (var Data in msgs)
                 {
-                   
+
                     data_listbox.Items.Add(Data.ID);
                 }
             }
 
-            
+
             // Writing the inputs to the json file.
             string jsonFile3 = @"../../../Json_data.json";
             string txtFile3 = @"../../../Json_data.txt";
@@ -267,7 +272,7 @@ namespace NapierBankService
 
             File.WriteAllText(jsonFile3, serialize);
             File.WriteAllText(txtFile3, serializetxt + Environment.NewLine);
-            MessageBox.Show("Message Sent!");
+         
 
 
             
@@ -319,28 +324,18 @@ namespace NapierBankService
 
 
                                 if (Regex.IsMatch(id, "S"))
-                                {
-
-
-
-                                     
-                                       AllMessages data = JsonConvert.DeserializeObject<AllMessages>(tempObj);
-
-
-
+                                {                                     
+                                   AllMessages data = JsonConvert.DeserializeObject<AllMessages>(tempObj);
+                                    
                                     allmsg.ID = data.ID;
                                     allmsg.Message = data.Message;
 
-
                                   
                                         data_listbox.Items.Add(data.ID);
-
-                                    
-
+                                   
 
                                     input.Add(data);
                                     //ssg.sms_message.Insert(message_txtbox);
-
 
                                     // displaying information.
                                     header_txtblock.Text = data.ID;
@@ -439,7 +434,6 @@ namespace NapierBankService
 
             try
             {
-                SendTWEET tweet = new SendTWEET();
                 tweet.ID = message.ID;
                 tweet.Message = message.Message;
                 tweet.Twitter_User = message.Twitter_User;
@@ -496,9 +490,8 @@ namespace NapierBankService
 
 
                 //Output file
-            //    output.Add(tweet);
-              //  MainWindow save = new MainWindow();
-               // save.outputFile(output);
+               output.Add(tweet);
+                outputFile(output);
 
                 // SHOW RESULTS
                 header_txtblock.Text =  tweet.ID;
@@ -506,12 +499,12 @@ namespace NapierBankService
                 user_txtbox.Text =  tweet.Twitter_User;
 
                 // TRENDING LIST
-                //      trendList.Items.Clear();
-                //      var sortedDict = hashtags.OrderBy(x => x.Value);
-                //    foreach (var item in sortedDict.OrderByDescending(key => key.Value))
-                //  {
-                //     trendList.Items.Add(item);
-                //   }
+                      hashtag_list.Items.Clear();
+                      var sortedDict = hashtags.OrderBy(x => x.Value);
+                    foreach (var item in sortedDict.OrderByDescending(key => key.Value))
+                    {
+                     hashtag_list.Items.Add(item);
+                   }
             }
             catch (Exception e)
             {
@@ -593,9 +586,8 @@ namespace NapierBankService
                 body_txtbox.Text = "Text: " + email.Message;
 
                 // SAVE IN JSON FILE
-             //   output.Add(email);
-               // MainWindow save = new MainWindow();
-               // save.outputFile(output);
+                output.Add(email);
+                outputFile(output);
             }
             catch (Exception e)
             {
@@ -608,7 +600,6 @@ namespace NapierBankService
         private void printSMS(AllMessages message)
         {
 
-            List<AllMessages> msgs = new List<AllMessages>();
 
             AllMessages sms = new AllMessages();
 
@@ -655,7 +646,6 @@ namespace NapierBankService
         //Looks for the json id and prints it.
         private void ChoseItem(object sender, MouseButtonEventArgs e)
         {
-            List<AllMessages> msgs = new List<AllMessages>();
 
 
             try
