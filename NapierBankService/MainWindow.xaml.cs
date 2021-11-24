@@ -30,64 +30,66 @@ namespace NapierBankService
 
 
 
-        List<string> quarantineList = new List<string>();
-        Dictionary<string, string> SIR = new Dictionary<string, string>();
+
         List<string> mentions = new List<string>();
         Dictionary<string, int> hashtags = new Dictionary<string, int>();
         List<AllMessages> output = new List<AllMessages>();
         List<AllMessages> input = new List<AllMessages>();
+        List<string> List_QUAR = new List<string>();
+        Dictionary<string, string> LIST_SIR = new Dictionary<string, string>();
+
         //AllMessages message = new AllMessages();
 
 
         SendTWEET tweet = new SendTWEET();
-
-
-        List<SendSMS> sms = new List<SendSMS>();
-
-        List<SendEMAIL> mail = new List<SendEMAIL>();
-
-        List<SendTWEET> twt = new List<SendTWEET>();
-
-        ChoseAbvs newAbvs = new ChoseAbvs();
+        SendSMS sms = new SendSMS();
         AllMessages allmsg = new AllMessages();
-
-
-
         List<AllMessages> msgs = new List<AllMessages>();
-
 
 
 
 
         public MainWindow()
         {
-            
+
 
             InitializeComponent();
 
-              msgs = outputFile(msgs);
+            msgs = outputFile(msgs);
 
 
-           
+            foreach (var Hastaghs in hashtags)
+            {
+                hashtag_list.Items.Add(Hastaghs.Value);
+            }
 
-            
+
             if (msgs != null)
             {
 
                 foreach (var Data in msgs)
                 {
-                   // msgs = Serializing(msgs);
+                    // msgs = Serializing(msgs);
                     data_listbox.Items.Add(Data.ID);
                 }
             }
-            
-            
+
+            if (mentions != null) {
+                foreach (var Mention in mentions)
+                {
+
+                    mention_list.Items.Add(Mention);
+                }
+
+               
+            }
+
         }
-                 
+
 
         static List<AllMessages> outputFile(List<AllMessages> msgs)
         {
-            
+
             string fileName = @"../../../Json_data.json";
 
             if (File.Exists(fileName))
@@ -95,161 +97,269 @@ namespace NapierBankService
                 var ALLDATA = JsonConvert.DeserializeObject<List<AllMessages>>(File.ReadAllText(fileName));
                 return ALLDATA;
             }
-           return null;
+            return null;
         }
 
 
-        static List<AllMessages> Serializing(List<AllMessages> msgs)
-        {
-
-
-
-            // Writing the inputs to the json file.
-            string jsonFile3 = @"../../../Json_data.json";
-            string txtFile3 = @"../../../Json_data.txt";
-
-            string serialize = JsonConvert.SerializeObject(msgs, Formatting.Indented);
-            string serializetxt = JsonConvert.SerializeObject(msgs.ToArray());
-
-            File.WriteAllText(jsonFile3, serialize);
-            File.WriteAllText(txtFile3, serializetxt + Environment.NewLine);
-            MessageBox.Show("Message Sent!");
-
-            return msgs;
-
-
-        }
-        
-           
-
-
-
+    
 
         private void send_btn_Click(object sender, RoutedEventArgs e)
         {
 
+
             string user = user_txtbox.Text;
             string message = body_txtbox.Text;
             string mail_subject = subject_txtbox.Text;
-            string numbers = new String(user.ToCharArray().Where(c => Char.IsDigit(c)).ToArray()); //checks if the input is only digits.         
+            string numbers = new String(user.ToCharArray().Where(c => Char.IsDigit(c)).ToArray()); //checks if the input is only digits.
+            string SC1 = sc1_txtbox.Text;
+            string SC2 = sc2_txtbox.Text;
+            string SC3 = sc3_txtbox.Text;
+            string DATEPICKER = date_sir.Text;
 
-            generate newsms = new generate();       
-               
 
-                if (message == "" || user == "")
+            generate newsms = new generate();
+
+
+            if (message == "" || user == "")
+            {
+                MessageBox.Show("Empty boxes, try again!.");
+            }
+
+
+            if (message.Length > 140 || message.Length == 0)
+            {
+                MessageBox.Show("The message cant be more than 140 characters! :( ");
+            }
+
+
+            //SENDING TWEETS AND ADDING IT TO THE JSON FILE.
+            if (user.StartsWith("@"))
+            {
+
+                // Checking for any abbreviation calling the class made, which is checking for any.
+                ChoseAbvs abvs = new ChoseAbvs();
+                string addabv = abvs.main(message);
+                message = addabv;
+
+                msgs.Add(new AllMessages()
                 {
-                    MessageBox.Show("Empty boxes, try again!.");
-                }
+
+                    ID = newsms.Generator_Id("T"),
+
+                    Message = newsms.Twitter_tweet(message, "T"),
+
+                    Twitter_User = newsms.Twitter_username(user, "T")
 
 
-                if (message.Length > 140 || message.Length == 0)
+                });
+
+                MessageBox.Show("Tweet Sent!");
+
+
+
+                if (message != null)
                 {
-                    MessageBox.Show("The message cant be more than 140 characters! :( ");
-                }
 
 
-
-                if (user.StartsWith("@"))
-                {
-
-
-
-                    msgs.Add(new AllMessages()
+                    // SEARCH THROUGH WORDS 
+                    string sentence = message;
+                    foreach (string word in (sentence).Split(' '))
                     {
+                        // If there is a mention
+                        if (word.StartsWith("@"))
+                        {
+                            if (!mentions.Contains(word))
+                            {
+                                mentions.Add(word);
+                                mention_list.Items.Add(word);
 
-                        ID = newsms.Generator_Id("T"),
 
-                        Message = newsms.Twitter_tweet(message, "T"),
+                            }
+                        }
 
-                        Twitter_User = newsms.Twitter_username(user, "T")
+                        // If there is a hashtag
+                        if (word.StartsWith("#"))
+                        {
+                            if (hashtags.ContainsKey(word))
+                            {
+                                hashtags[word] += 1;
+                            }
+                            else
+                            {
+                                hashtags.Add(word, 1);
+                                hashtag_list.Items.Add(word);
+                            }
+                        }
+                    }
+                }
 
-
-                    });
-
-                      MessageBox.Show("Tweet Sent!");
-
-                  if (msgs != null)
-                  {
-                    data_listbox.Items.Clear();
+                if (msgs != null)
+                {
+                    //data_listbox.Items.Clear();
                     foreach (var Data in msgs)
                     {
 
                         data_listbox.Items.Add(Data.ID);
                     }
-                  }
-
-
                 }
 
 
+            }
 
 
+
+            //SENDING SMS AND ADDING IT TO THE JSON LIST.
             if (user.StartsWith("+") && user.Length <= 13 && user.Length >= 5)
+            {
+
+                // Checking for any abbreviation calling the class made, which is checking for any.
+                ChoseAbvs abvs = new ChoseAbvs();
+                string addabv = abvs.main(message);
+                message = addabv;
+
+                if ((user.Length >= 13) && (user.Length <= 6))
                 {
-
-
-                    if ((user.Length >= 13) && (user.Length <= 6))
-                    {
-                        MessageBox.Show("Incorrect phone number format, have to be with the country code followed by the ccountry, i.e(+34745738295).");
-
-                    }
-                    else
-                    {
-
-                        msgs.Add(new AllMessages()
-                        {
-                            ID = newsms.Generator_Id("S"),
-
-                            Message = newsms.SMS_type(message, "S"),
-
-                            Sms_Phone = newsms.SMS_type_PHONE(user, "S")
-
-                        });
-
-
-
-                        MessageBox.Show("SMS Sent!");
-                          if (msgs != null)
-                         {
-                              data_listbox.Items.Clear();
-                               foreach (var Data in msgs)
-                              {
-
-                                  data_listbox.Items.Add(Data.ID);
-                               }
-                          }
-
+                    MessageBox.Show("Incorrect phone number format, have to be with the country code followed by the ccountry, i.e(+34745738295).");
 
                 }
-                }
-
-
-
-                if (user.Contains("@") && mail_subject != "" && !user.StartsWith("@"))
+                else
                 {
 
-                 msgs = Serializing(msgs);
                     msgs.Add(new AllMessages()
                     {
-                        ID = newsms.Generator_Id("E"),
+                        ID = newsms.Generator_Id("S"),
 
-                        Message = newsms.Email_message(message, "E"),
+                        Message = newsms.SMS_type(message, "S"),
 
-                        Email_subject = newsms.Email_subject(mail_subject, "E"),
-
-                        Email_address = newsms.Email_address(user, "E")
+                        Sms_Phone = newsms.SMS_type_PHONE(user, "S")
 
                     });
- 
-                     MessageBox.Show("Enail Sent!");
+
+
+
+                    MessageBox.Show("SMS Sent!");
+                    if (msgs != null)
+                    {
+                        data_listbox.Items.Clear();
+                        foreach (var Data in msgs)
+                        {
+
+                            data_listbox.Items.Add(Data.ID);
+                        }
+                    }
 
 
                 }
-                else if (message.Length > 1029)
+            }
+
+
+            //SENDING EMAILS (STANDARD EMAIL MESSAGES & SIGNIFICANT INCIDENT REPORTS.)
+            if (user.Contains("@") && mail_subject != "" && !user.StartsWith("@"))
+            {
+
+                //  msgs = Serializing(msgs);
+
+                msgs.Add(new AllMessages()
+                {
+                    ID = newsms.Generator_Id("E"),
+
+                    Message = newsms.Email_message(message, "E"),
+
+                    Email_subject = newsms.Email_subject(mail_subject, "E"),
+
+                    Email_address = newsms.Email_address(user, "E"),
+
+                    Sc1 = newsms.Sort1(SC1, "E"),
+                    Sc2 = newsms.Sort2(SC2, "E"),
+                    Sc3 = newsms.Sort3(SC3, "E"),
+
+                    Date = newsms.Datepicker(DATEPICKER, "E")
+
+
+                });
+
+                MessageBox.Show("Enail Sent!");
+
+
+                // URLs 
+                message = URL_QUARANTINED(message);
+
+
+                // check nature of incident
+
+                string sentence = message;
+
+
+
+
+
+
+
+                if (mail_subject.Contains("SIR"))
                 {
 
-                    MessageBox.Show("Empty box, try again!.");
+                    // check nature of incident
+
+                    Boolean found = false;
+
+                    List<string> incidentList = new List<string>();
+
+                    incidentList.Add("cash loss");
+                    incidentList.Add("bomb threat");
+                    incidentList.Add("staff attack");
+                    incidentList.Add("atmtheft");
+                    incidentList.Add("suspicious incident");
+                    incidentList.Add("customer attack");
+                    incidentList.Add("staff abuse");
+                    incidentList.Add("terrorism");
+                    incidentList.Add("theft");
+                    incidentList.Add("intelligence");
+                    incidentList.Add("raid");
+                    incidentList.Add("Cash loss");
+                    incidentList.Add("Bomb threat");
+                    incidentList.Add("Staff attack");
+                    incidentList.Add("Atm theft");
+                    incidentList.Add("Suspicious incident");
+                    incidentList.Add("Customer attack");
+                    incidentList.Add("Staff abuse");
+                    incidentList.Add("Terrorism");
+                    incidentList.Add("Theft");
+                    incidentList.Add("Intelligence");
+                    incidentList.Add("Raid");
+
+                   
+                    foreach (string incident in incidentList)
+                    {
+                        if (message.Contains(incident))
+                        {
+
+                            string letter = (((incident).Split(',')[0]).ToLower());
+
+                            letter = Regex.Replace(letter, @"\s+", "");
+
+
+                            LIST_SIR.Add(incident, message);
+                            list_SIR.Items.Add("Date: " + DATEPICKER + ", Sort Code: " + SC1 + "," + SC2 + "," + SC3 + ". Nature of Incident: " + incident);
+                            found = true;
+
+                        }
+                    }
+                    if (!found)
+                        MessageBox.Show("Nature of incident not found.");
+
+                }else if (sc1_txtbox == null)
+                {
+                    MessageBox.Show("Sort Code Empty.");
                 }
+
+
+
+            }
+            else if (message.Length > 1029)
+            {
+
+                MessageBox.Show("Empty box, try again!.");
+            }
 
 
             if (msgs != null)
@@ -268,23 +378,14 @@ namespace NapierBankService
             string txtFile3 = @"../../../Json_data.txt";
 
             string serialize = JsonConvert.SerializeObject(msgs.ToArray(), Formatting.Indented);
-            string serializetxt = JsonConvert.SerializeObject(msgs.ToArray());
+            string serializetxt = JsonConvert.SerializeObject(msgs.ToArray() + "\n");
 
-            File.WriteAllText(jsonFile3, serialize);
-            File.WriteAllText(txtFile3, serializetxt + Environment.NewLine);
-         
-
-
-            
-
-
-
+            File.WriteAllText(@"../../../Json_data.json", serialize);
+            File.WriteAllText(txtFile3, serializetxt + "\n");
 
         }
 
-   
 
-       
 
         private void Button_Click(object sender, RoutedEventArgs e)
         {
@@ -320,19 +421,19 @@ namespace NapierBankService
                                 string all = obj.Substring(obj.IndexOf("")); // id and Message                          
                                 string id = all.Split(',')[0]; // id
                                 tempObj = (obj + "}").Remove(0, 1); // THE JSON STRING                             
-                                                              
+
 
 
                                 if (Regex.IsMatch(id, "S"))
-                                {                                     
-                                   AllMessages data = JsonConvert.DeserializeObject<AllMessages>(tempObj);
-                                    
+                                {
+                                    AllMessages data = JsonConvert.DeserializeObject<AllMessages>(tempObj);
+
                                     allmsg.ID = data.ID;
                                     allmsg.Message = data.Message;
 
-                                  
-                                        data_listbox.Items.Add(data.ID);
-                                   
+
+                                    data_listbox.Items.Add(data.ID);
+
 
                                     input.Add(data);
                                     //ssg.sms_message.Insert(message_txtbox);
@@ -356,10 +457,10 @@ namespace NapierBankService
                                     //  allmsg.twitter_username = twt.twitter_username;
 
 
-                                  
-                                        data_listbox.Items.Add(data.ID);
 
-                             
+                                    data_listbox.Items.Add(data.ID);
+
+
                                     input.Add(data);
 
 
@@ -368,7 +469,7 @@ namespace NapierBankService
                                     header_txtblock.Text = data.ID;
                                     body_txtbox.Text = data.Message;
                                     user_txtbox.Text = data.Twitter_User;
-                                    
+
                                 }
 
                                 else if (Regex.IsMatch(id, "E"))
@@ -382,10 +483,10 @@ namespace NapierBankService
                                     // mail.email_subject = mails.email_subject;
                                     //  mail.email_message = mails.email_message;
 
-                                   
-                                        data_listbox.Items.Add(data.ID);
 
-                                    
+                                    data_listbox.Items.Add(data.ID);
+
+
 
                                     input.Add(data);
 
@@ -410,7 +511,7 @@ namespace NapierBankService
 
                         }
                     }
-                    
+
 
 
                 }
@@ -425,11 +526,31 @@ namespace NapierBankService
             }
         }
 
+        private string URL_QUARANTINED(string phrase)
+        {
+            foreach (string word in phrase.Split(' '))
+            {
+                if (word.StartsWith("http:") || word.StartsWith("https:"))
+                {
+                    string newM = phrase.Replace(word, "<URL Quarantined>");
+                    phrase = newM;
+                    foreach (string word1 in (phrase).Split(' '))
+                    {
+                        if (!List_QUAR.Contains(word))
+                        {
+                            List_QUAR.Add(word);
+                            url_list.Items.Add(word);
+                        }
+                    }
+                }
+            }
 
+            return phrase;
+        }
 
         private void printTWEET(AllMessages message)
         {
-            
+
 
 
             try
@@ -451,19 +572,23 @@ namespace NapierBankService
                 user_txtbox.Text = message.Twitter_User;
                 subject_txtbox.Text = " ";
 
+                // Checking for any abbreviation calling the class made, which is checking for any.
+                // shortAbs abvs = new shortAbs();
+                // string newM = abvs.main(tweet.Message);
+                // tweet.Message = newM;
+
                 // SEARCH THROUGH WORDS 
                 string sentence = tweet.Message;
+
                 foreach (string word in (sentence).Split(' '))
                 {
                     // If there is a mention
-                    if (message.Message.StartsWith("@"))
+                    if (word.StartsWith("@"))
                     {
                         if (!mentions.Contains(word))
                         {
                             mentions.Add(word);
                             mention_list.Items.Add(word);
-
-
                         }
                     }
 
@@ -473,135 +598,43 @@ namespace NapierBankService
                         if (hashtags.ContainsKey(word))
                         {
                             hashtags[word] += 1;
+                            hashtag_list.Items.Add(word);
                         }
                         else
                         {
                             hashtags.Add(word, 1);
-                            hashtag_list.Items.Add(word);
                         }
                     }
                 }
 
-                // Checking for any abbreviation calling the class made, which is checking for any.
-                // shortAbs abvs = new shortAbs();
-                // string newM = abvs.main(tweet.Message);
-                // tweet.Message = newM;
-
-
-
                 //Output file
-               output.Add(tweet);
+                output.Add(tweet);
                 outputFile(output);
 
                 // SHOW RESULTS
-                header_txtblock.Text =  tweet.ID;
-                body_txtbox.Text =  tweet.Message;
-                user_txtbox.Text =  tweet.Twitter_User;
+                header_txtblock.Text = tweet.ID;
+                body_txtbox.Text = tweet.Message;
+                user_txtbox.Text = tweet.Twitter_User;
 
                 // TRENDING LIST
-                      hashtag_list.Items.Clear();
-                      var sortedDict = hashtags.OrderBy(x => x.Value);
-                    foreach (var item in sortedDict.OrderByDescending(key => key.Value))
-                    {
-                     hashtag_list.Items.Add(item);
-                   }
+                hashtag_list.Items.Clear();
+                var sortedDict = hashtags.OrderBy(x => x.Value);
+                foreach (var item in sortedDict.OrderByDescending(key => key.Value))
+                {
+                    hashtag_list.Items.Add(item);
+                }
             }
             catch (Exception e)
             {
                 MessageBox.Show(e.Message);
             }
         }
-
-        private void printEMAIL(AllMessages message)
-        {
-            SendEMAIL email = new SendEMAIL();
-
-            List<string> incidentList = new List<string>();
-
-            incidentList.Add("cashloss");
-            incidentList.Add("bombthreat");
-            incidentList.Add("staffattack");
-            incidentList.Add("atmtheft");
-            incidentList.Add("suspiciousincident");
-            incidentList.Add("customerattack");
-            incidentList.Add("staffabuse");
-            incidentList.Add("terrorism");
-            incidentList.Add("theft");
-            incidentList.Add("intelligence");
-            incidentList.Add("raid");
-
-            //string sentence = "maria@gmail.com ,SIRhello, 99-99-99 ,Theft, Hi";
-            string pharse = message.Message;
-
-            try
-            {
-                email.ID = message.ID; // ID
-                email.Message = message.Message; // BODY 
-                email.Email_address = pharse.Split(',')[0]; //SENDER
-                email.Email_subject = pharse.Split(',')[1]; // SUBJECT
-
-                // SIGNIFICANT INCIDENT REPORT
-                if ((email.Email_subject).Contains("SIR"))
-                {
-                    email.Message =
-                        pharse.Split(',')[2] + ", " +
-                        pharse.Split(',')[3] + ", " +
-                        pharse.Split(',')[4];
-
-                    Boolean found = false;
-
-                    // check nature of incident
-                    foreach (string incident in incidentList)
-                    {
-                        string letter = (((email.Message).Split(',')[1]).ToLower());
-                        letter = Regex.Replace(letter, @"\s+", "");
-
-                        if (letter.Equals(incident))
-                        {
-                            SIR.Add((email.Message).Split(',')[0], (email.Message).Split(',')[1]);
-                            // sirList.Items.Add((email.Message).Split(',')[0] + ", " + (email.Message).Split(',')[1]);
-                            found = true;
-                        }
-                    }
-
-                    if (!found)
-                        MessageBox.Show("Nature of incident not found.");
-
-                }
-                // STANDARD EMAIL MESSAGE
-                else
-                {
-                    //string sentence = "maria@gmail.com 12345678901234567890 hello this is the text";
-
-                    // TEXT - max of 1028 chars
-                    email.Message = (email.Message).Split(',')[2];
-                }
-
-                // URLs 
-                //email.Message = url_search(email.Message);
-
-                // SHOW INFO
-                user_txtbox.Text = "Sender: " + email.Email_address;
-                subject_txtbox.Text = "Subject: " + email.Email_subject;
-                body_txtbox.Text = "Text: " + email.Message;
-
-                // SAVE IN JSON FILE
-                output.Add(email);
-                outputFile(output);
-            }
-            catch (Exception e)
-            {
-                MessageBox.Show(e.Message);
-            }
-
-        }
-
 
         private void printSMS(AllMessages message)
         {
 
 
-            AllMessages sms = new AllMessages();
+           
 
             // SENDER - int
             try
@@ -618,13 +651,12 @@ namespace NapierBankService
                 sms.Message = str2;
 
                 // Checking for any abbreviation calling the class made, which is checking for any.
-              //  shortAbs abvs = new shortAbs();
-               // string addabv = abvs.main(sms.Message);
-               // sms.Message = addabv;
+                ChoseAbvs abvs = new ChoseAbvs();
+                string addabv = abvs.main(sms.Message);
+                sms.Message = addabv;
 
                 // OUTPUT TO FILE
                 msgs.Add(sms);
-                MainWindow save = new MainWindow();
                 outputFile(msgs);
 
 
@@ -638,7 +670,7 @@ namespace NapierBankService
             {
                 MessageBox.Show(e.Message);
             }
-            
+
 
 
         }
@@ -666,15 +698,17 @@ namespace NapierBankService
                         {
                             printSMS(message);
 
-                            
+
                             body_txtbox.Text = message.Message;
                             header_txtblock.Text = message.ID;
                             user_txtbox.Text = message.Sms_Phone;
                             subject_txtbox.Text = " ";
-                            
-                            // ABBREVIATIONS
-                            string newM = newAbvs.main(message.Message);
-                            message.Message = newM;
+                            sc1_txtbox.Text = " ";
+                            sc2_txtbox.Text = " ";
+                            sc3_txtbox.Text = " ";
+                            date_sir.Text = " ";
+
+
 
 
                             break;
@@ -682,13 +716,17 @@ namespace NapierBankService
                         }
                         else if (message.ID[0].Equals('E'))
                         {
-                            printEMAIL(message);
-                            
+
                             body_txtbox.Text = message.Message;
                             header_txtblock.Text = message.ID;
                             user_txtbox.Text = message.Email_address;
                             subject_txtbox.Text = message.Email_subject;
-                            
+                            sc1_txtbox.Text = message.Sc1;
+                            sc2_txtbox.Text = message.Sc2;
+                            sc3_txtbox.Text = message.Sc3;
+                            date_sir.Text = message.Date;
+
+
                             break;
                         }
 
@@ -699,6 +737,10 @@ namespace NapierBankService
                             header_txtblock.Text = message.ID;
                             user_txtbox.Text = message.Twitter_User;
                             subject_txtbox.Text = "";
+                            sc1_txtbox.Text = " ";
+                            sc2_txtbox.Text = " ";
+                            sc3_txtbox.Text = " ";
+                            date_sir.Text = " ";
 
                             break;
                         }
@@ -716,34 +758,72 @@ namespace NapierBankService
 
         private void TxtItem(object sender, MouseButtonEventArgs e)
         {
-            AllMessages allmsg = new AllMessages();
             try
             {
-                // read id
+                //reads the ID´S.
                 string line = Convert.ToString(txt_list.SelectedItem);
 
                 // search for object with that id in data in
-                foreach (AllMessages message in input)
+                foreach (AllMessages message in msgs)
                 {
+
+
+
                     if (line.Equals(message.ID))
                     {
                         // depending on type, select process
                         if (message.ID[0].Equals('S'))
                         {
                             printSMS(message);
-                            // ABBREVIATIONS
-                            string newM = newAbvs.main(allmsg.Message);
-                            allmsg.Message = newM;
+
+
                             body_txtbox.Text = message.Message;
                             header_txtblock.Text = message.ID;
                             user_txtbox.Text = message.Sms_Phone;
+                            subject_txtbox.Text = " ";
+                            sc1_txtbox.Text = " ";
+                            sc2_txtbox.Text = " ";
+                            sc3_txtbox.Text = " ";
+                            date_sir.Text = " ";
+
+
+
+
+                            break;
+
+                        }
+                        else if (message.ID[0].Equals('E'))
+                        {
+
+                            body_txtbox.Text = message.Message;
+                            header_txtblock.Text = message.ID;
+                            user_txtbox.Text = message.Email_address;
+                            subject_txtbox.Text = message.Email_subject;
+                            sc1_txtbox.Text = message.Sc1;
+                            sc2_txtbox.Text = message.Sc2;
+                            sc3_txtbox.Text = message.Sc3;
+                            date_sir.Text = message.Date;
 
 
                             break;
                         }
-                        else if (message.ID[0].Equals('E')) { printEMAIL(message); break; }
-                        else if (message.ID[0].Equals('T')) { printTWEET(message); break; }
+
+                        else if (message.ID[0].Equals('T'))
+                        {
+                            printTWEET(message);
+                            body_txtbox.Text = message.Message;
+                            header_txtblock.Text = message.ID;
+                            user_txtbox.Text = message.Twitter_User;
+                            subject_txtbox.Text = "";
+                            sc1_txtbox.Text = " ";
+                            sc2_txtbox.Text = " ";
+                            sc3_txtbox.Text = " ";
+                            date_sir.Text = " ";
+
+                            break;
+                        }
                     }
+
                 }
             }
             catch (Exception b)
@@ -751,8 +831,9 @@ namespace NapierBankService
                 MessageBox.Show(b.Message);
             }
 
+
+
         }
     }
 }
- 
 

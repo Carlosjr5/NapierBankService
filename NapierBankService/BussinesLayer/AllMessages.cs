@@ -1,4 +1,5 @@
-﻿using System;
+﻿using NapierBankService.DataLayer;
+using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Text.RegularExpressions;
@@ -14,8 +15,12 @@ namespace NapierBankService
         private string sms_phone;
         private string email_address;
         private string email_subject;
-       
-       
+        public string Sc1 { get; set; }
+        public string Sc2 { get; set; }
+        public string Sc3 { get; set; }
+        public string Date { get; set; }
+
+
         public string ID
         {
             get { return id; }
@@ -37,9 +42,12 @@ namespace NapierBankService
             get { return message; }
 
             set
-            {             
-
-                    message = value;
+            {
+                // Checking for any abbreviation calling the class made, which is checking for any.
+                ChoseAbvs abvs = new ChoseAbvs();
+                string addabv = abvs.main(message);
+                message = addabv;
+                message = value;
             
 
             }
