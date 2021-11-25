@@ -31,7 +31,7 @@ namespace NapierBankService
 
 
         List<string> mentions = new List<string>();
-        Dictionary<string, int> hashtags = new Dictionary<string, int>();
+        List<string> hashtags = new List<string>();
         List<AllMessages> output = new List<AllMessages>();
         List<AllMessages> input = new List<AllMessages>();
         List<string> List_QUAR = new List<string>();
@@ -61,7 +61,7 @@ namespace NapierBankService
 
             foreach (var Hastaghs in hashtags)
             {
-                hashtag_list.Items.Add(Hastaghs.Value);
+                hashtag_list.Items.Add(Hastaghs);
             }
 
 
@@ -118,20 +118,22 @@ namespace NapierBankService
 
                 string fileName = @"../../../Json_data.json";
                 string fileNameTXT = @"../../../Json_data.txt";
+           
 
-
-            if (File.Exists(fileName))
+                if (File.Exists(fileName))
             {
                 var ALLDATA = JsonConvert.SerializeObject(File.ReadAllText(fileName));
+                
 
-                while (ALLDATA.Equals(""))
+                    while (ALLDATA.Equals(""))
                 {
-                    File.WriteAllText(fileName, "[]");
+                    File.WriteAllText(fileName , "[]");
                     File.WriteAllText(fileNameTXT, "[]");
                 }
             }
-
             
+
+
 
 
         }
@@ -140,9 +142,8 @@ namespace NapierBankService
         private void send_btn_Click(object sender, RoutedEventArgs e)
         {
 
-          
-          List<AllMessages> msgs = new List<AllMessages>();
 
+            
 
             string user = user_txtbox.Text;
             string message = body_txtbox.Text;
@@ -212,7 +213,7 @@ namespace NapierBankService
 
                     // SEARCH THROUGH WORDS 
                     string sentence = message;
-                    foreach (string word in (sentence).Split(' '))
+                    foreach (string word in sentence.Split(' '))
                     {
                         // If there is a mention
                         if (word.StartsWith("@"))
@@ -229,15 +230,13 @@ namespace NapierBankService
                         // If there is a hashtag
                         if (word.StartsWith("#"))
                         {
-                            if (hashtags.ContainsKey(word))
+
+                            if (!hashtags.Contains(word))
                             {
-                                hashtags[word] += 1;
-                            }
-                            else
-                            {
-                                hashtags.Add(word, 1);
+                                hashtags.Add(word);
                                 hashtag_list.Items.Add(word);
                             }
+                          
                         }
                     }
                 }
@@ -352,9 +351,9 @@ namespace NapierBankService
 
                 });
 
-                MessageBox.Show("STANDARD EMAIL MESSAGE SENT!");
 
-                
+                MessageBox.Show("EMAIL SENT!");
+
 
 
                 // URLs 
@@ -376,8 +375,9 @@ namespace NapierBankService
 
 
 
-            // check nature of incident
-
+            //Nature of Incident list.
+            //Boolean in case it doesnt find an incident on message, return message, not incident found.
+            //In case there is, it will be added to the SIR List Box.
             Boolean found = false;
 
             List<string> incidentList = new List<string>();
@@ -414,7 +414,7 @@ namespace NapierBankService
 
                
 
-                if (SC1.Length > 2 || SC2.Length > 2 || SC3.Length > 2 )                  
+                if (SC1.Length > 2 || SC2.Length > 2 || SC3.Length > 2 || DATEPICKER == null || SC1.Length < 2 || SC2.Length < 2 || SC3.Length < 2)                  
                 {
                     MessageBox.Show("The Sort Code can´t be longer than 2 characters, example (99-99-99), you need to enter 2 numbers on each text box, try again:)");
                     return;
@@ -439,15 +439,10 @@ namespace NapierBankService
                     main.Show();
                     Close();
 
-
-
-
-
-
                 }
-                else
-                {
-
+             
+             
+                    //Getting and setting the inputs on the strings with their correspondent letter.
                     msgs.Add(new AllMessages()
                     {
                         ID = newsms.Generator_Id("E"),
@@ -467,46 +462,38 @@ namespace NapierBankService
 
                     });
 
-
                     //Each time there is an inccident from the list on the message it will print all the data on the SIR list.
                     foreach (string incident in incidentList)
                     {
 
-                        string letter = (((incident).Split(',')[0]).ToLower());
-
+                        string letter = (((message).Split(',')[0]).ToLower());
                         letter = Regex.Replace(letter, @"\s+", "");
 
-
-                        LIST_SIR.Add(message);
-                        list_SIR.Items.Add("Date: " + DATEPICKER + ", Sort Code: " + SC1 + "," + SC2 + "," + SC3 + ". Nature of Incident: " + incident);
-                        found = true;
+                        if (letter.Equals(incident))
+                        {
+                            LIST_SIR.Add(message);
+                            list_SIR.Items.Add("Date: " + DATEPICKER + ", Sort Code: " + SC1 + "," + SC2 + "," + SC3 + ". Nature of Incident: " + incident);
+                            found = true;
+                        }
+                       
 
                     }
                     if (!found)
-                        MessageBox.Show("Nature of incident not found.");
-
-
-                   
-
-                }
+                        MessageBox.Show("Nature of incident not found on the list :( ");
 
 
 
 
-                
-
-                
+                MessageBox.Show("EMAIL SENT!");
 
 
             }
 
 
 
-           
-          
 
-     
-           
+
+
 
             if (msgs != null)
             {
@@ -586,12 +573,10 @@ namespace NapierBankService
                                     allmsg.ID = data.ID;
                                     allmsg.Message = data.Message;
 
-
+                                    //Adding item Message ID to a list.
                                     data_listbox.Items.Add(data.ID);
-
-
                                     input.Add(data);
-                                    //ssg.sms_message.Insert(message_txtbox);
+                               
 
                                     // displaying information.
                                     header_txtblock.Text = data.ID;
@@ -616,10 +601,8 @@ namespace NapierBankService
                                     //  allmsg.twitter_username = twt.twitter_username;
 
 
-
+                                    //Adding item Message ID to a list.
                                     data_listbox.Items.Add(data.ID);
-
-
                                     input.Add(data);
 
 
@@ -682,6 +665,17 @@ namespace NapierBankService
 
                         }
                     }
+                    else if (find.Equals(".json"))
+                    {
+                        File.ReadAllText(fileDialog.FileName);
+
+                        foreach (string line in File.ReadAllLines(fileDialog.FileName))
+                        {
+
+                            data_listbox.Items.Add(line);
+
+                        }
+                    }
 
 
 
@@ -719,134 +713,9 @@ namespace NapierBankService
             return phrase;
         }
 
-        private void printTWEET(AllMessages message)
-        {
-
-
-
-            try
-            {
-                tweet.ID = message.ID;
-                tweet.Message = message.Message;
-                tweet.Twitter_User = message.Twitter_User;
-
-
-
-                // TEXT - max 140 chars
-                int i = message.Message.IndexOf(" ") + 1;
-                string str = message.Message.Substring(i);
-                tweet.Message = str;
-
-
-                body_txtbox.Text = message.Message;
-                header_txtblock.Text = message.ID;
-                user_txtbox.Text = message.Twitter_User;
-                subject_txtbox.Text = " ";
-
-                // Checking for any abbreviation calling the class made, which is checking for any.
-                // shortAbs abvs = new shortAbs();
-                // string newM = abvs.main(tweet.Message);
-                // tweet.Message = newM;
-
-                // SEARCH THROUGH WORDS 
-                string sentence = tweet.Message;
-
-                foreach (string word in (sentence).Split(' '))
-                {
-                    // If there is a mention
-                    if (word.StartsWith("@"))
-                    {
-                        if (!mentions.Contains(word))
-                        {
-                            mentions.Add(word);
-                            mention_list.Items.Add(word);
-                        }
-                    }
-
-                    // If there is a hashtag
-                    if (word.StartsWith("#"))
-                    {
-                        if (hashtags.ContainsKey(word))
-                        {
-                            hashtags[word] += 1;
-                            hashtag_list.Items.Add(word);
-                        }
-                        else
-                        {
-                            hashtags.Add(word, 1);
-                        }
-                    }
-                }
-
-                //Output file
-                output.Add(tweet);
-                outputFile(output);
-
-                // SHOW RESULTS
-                header_txtblock.Text = tweet.ID;
-                body_txtbox.Text = tweet.Message;
-                user_txtbox.Text = tweet.Twitter_User;
-
-                // TRENDING LIST
-                hashtag_list.Items.Clear();
-                var sortedDict = hashtags.OrderBy(x => x.Value);
-                foreach (var item in sortedDict.OrderByDescending(key => key.Value))
-                {
-                    hashtag_list.Items.Add(item);
-                }
-            }
-            catch (Exception e)
-            {
-                MessageBox.Show(e.Message);
-            }
-        }
-
-        private void printSMS(AllMessages message)
-        {
-
-
-           
-
-            // SENDER - int
-            try
-            {
-                sms.ID = message.ID;
-                sms.Message = message.Message;
-                sms.Sms_Phone = message.Sms_Phone.Split(' ')[1]; // second word (number)
-
-
-                int i = sms.Message.IndexOf(" ") + 1;
-                string str = sms.Message.Substring(i); // delete the first word
-                int x = str.IndexOf(" ") + 1;
-                string str2 = str.Substring(x); // delete the second word
-                sms.Message = str2;
-
-                // Checking for any abbreviation calling the class made, which is checking for any.
-                ChoseAbvs abvs = new ChoseAbvs();
-                string addabv = abvs.main(sms.Message);
-                sms.Message = addabv;
-
-                // OUTPUT TO FILE
-                msgs.Add(sms);
-                outputFile(msgs);
-
-
-                body_txtbox.Text = message.Message;
-                header_txtblock.Text = message.ID;
-                user_txtbox.Text = message.Email_address;
-                subject_txtbox.Text = message.Email_subject;
-
-            }
-            catch (Exception e)
-            {
-                MessageBox.Show(e.Message);
-            }
-
-
-
-        }
-
-        //Looks for the json id and prints it.
+  
+      
+        //Looks for the json id and prints it back into the boxes.
         private void ChoseItem(object sender, MouseButtonEventArgs e)
         {
 
@@ -867,7 +736,7 @@ namespace NapierBankService
                         // depending on type, select process
                         if (message.ID[0].Equals('S'))
                         {
-                            printSMS(message);
+                            
 
 
                             body_txtbox.Text = message.Message;
@@ -904,7 +773,7 @@ namespace NapierBankService
 
                         else if (message.ID[0].Equals('T'))
                         {
-                            printTWEET(message);
+                          
                             body_txtbox.Text = message.Message;
                             header_txtblock.Text = message.ID;
                             user_txtbox.Text = message.Twitter_User;
@@ -946,7 +815,7 @@ namespace NapierBankService
                         // depending on type, select process
                         if (message.ID[0].Equals('S'))
                         {
-                            printSMS(message);
+                            
 
 
                             body_txtbox.Text = message.Message;
@@ -982,7 +851,7 @@ namespace NapierBankService
 
                         else if (message.ID[0].Equals('T'))
                         {
-                            printTWEET(message);
+                          
                             body_txtbox.Text = message.Message;
                             header_txtblock.Text = message.ID;
                             user_txtbox.Text = message.Twitter_User;
