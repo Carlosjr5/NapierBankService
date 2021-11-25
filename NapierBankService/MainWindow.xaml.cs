@@ -30,13 +30,12 @@ namespace NapierBankService
 
 
 
-
         List<string> mentions = new List<string>();
         Dictionary<string, int> hashtags = new Dictionary<string, int>();
         List<AllMessages> output = new List<AllMessages>();
         List<AllMessages> input = new List<AllMessages>();
         List<string> List_QUAR = new List<string>();
-        Dictionary<string, string> LIST_SIR = new Dictionary<string, string>();
+        List<string> LIST_SIR = new List<string>();
 
         //AllMessages message = new AllMessages();
 
@@ -45,7 +44,8 @@ namespace NapierBankService
         SendSMS sms = new SendSMS();
         AllMessages allmsg = new AllMessages();
         List<AllMessages> msgs = new List<AllMessages>();
-
+        List<string> incidentList = new List<string>();
+        generate newsms = new generate();
 
 
 
@@ -57,6 +57,7 @@ namespace NapierBankService
 
             msgs = outputFile(msgs);
 
+            emptyJson();
 
             foreach (var Hastaghs in hashtags)
             {
@@ -84,6 +85,14 @@ namespace NapierBankService
                
             }
 
+           
+
+                        
+                    
+                
+            
+
+
         }
 
 
@@ -100,11 +109,39 @@ namespace NapierBankService
             return null;
         }
 
+        private void emptyJson()
+        {
+            //call file name
+            // check if is empty, and if is empty input a []
 
-    
+            List<AllMessages> msgs = new List<AllMessages>();
+
+                string fileName = @"../../../Json_data.json";
+                string fileNameTXT = @"../../../Json_data.txt";
+
+
+            if (File.Exists(fileName))
+            {
+                var ALLDATA = JsonConvert.SerializeObject(File.ReadAllText(fileName));
+
+                while (ALLDATA.Equals(""))
+                {
+                    File.WriteAllText(fileName, "[]");
+                    File.WriteAllText(fileNameTXT, "[]");
+                }
+            }
+
+            
+
+
+        }
+
 
         private void send_btn_Click(object sender, RoutedEventArgs e)
         {
+
+          
+          List<AllMessages> msgs = new List<AllMessages>();
 
 
             string user = user_txtbox.Text;
@@ -116,25 +153,37 @@ namespace NapierBankService
             string SC3 = sc3_txtbox.Text;
             string DATEPICKER = date_sir.Text;
 
+            MainWindow main = new MainWindow();
 
-            generate newsms = new generate();
+
+           
 
 
-            if (message == "" || user == "")
+
+
+
+
+            if (!user.StartsWith("@") && !user.StartsWith("+") && mail_subject.Contains("SIR") && mail_subject.Contains("sir"))
             {
-                MessageBox.Show("Empty boxes, try again!.");
+                
+                    MessageBox.Show("Incorrect format! \n For Twitter, Sender has to start with '@', followed by the twitter name," +
+                        "                              \n  For SMS, has to start with '+' followed by the country code and the phone number," +
+                        "                              \n  For Standard email just the normall email, a subject and the message, " +
+                        "                              \n  For SIGNIFICANT INCIDENT REPORTS, subject have to be SIR, fill up all the boxes, now try again! :)" + MessageBoxImage.Information);
+                return;
+                
             }
-
-
-            if (message.Length > 140 || message.Length == 0)
-            {
-                MessageBox.Show("The message cant be more than 140 characters! :( ");
-            }
-
 
             //SENDING TWEETS AND ADDING IT TO THE JSON FILE.
             if (user.StartsWith("@"))
             {
+
+                if (message.Length > 140 || message.Length == 0 || message == "" || user == "")
+                {
+                    MessageBox.Show("The boxes cant be empty and the message cant be more than 140 characters for a sms or twitter! :( ");
+                    return;
+                }
+
 
                 // Checking for any abbreviation calling the class made, which is checking for any.
                 ChoseAbvs abvs = new ChoseAbvs();
@@ -205,11 +254,11 @@ namespace NapierBankService
 
 
             }
-
+           
 
 
             //SENDING SMS AND ADDING IT TO THE JSON LIST.
-            if (user.StartsWith("+") && user.Length <= 13 && user.Length >= 5)
+            if (user.StartsWith("+"))
             {
 
                 // Checking for any abbreviation calling the class made, which is checking for any.
@@ -217,9 +266,10 @@ namespace NapierBankService
                 string addabv = abvs.main(message);
                 message = addabv;
 
-                if ((user.Length >= 13) && (user.Length <= 6))
+                if ((user.Length >= 13) || (user.Length <= 6) || user == numbers)
                 {
                     MessageBox.Show("Incorrect phone number format, have to be with the country code followed by the ccountry, i.e(+34745738295).");
+                    return;
 
                 }
                 else
@@ -253,11 +303,42 @@ namespace NapierBankService
             }
 
 
+
+
+
+
+
+
+
+
+
+           
+
+
             //SENDING EMAILS (STANDARD EMAIL MESSAGES & SIGNIFICANT INCIDENT REPORTS.)
-            if (user.Contains("@") && mail_subject != "" && !user.StartsWith("@"))
+            if (user.Contains("@") && mail_subject != "" && !user.StartsWith("@") && !mail_subject.Contains("SIR"))
             {
 
+
+                if (message.Length > 1029)
+                {
+
+                    MessageBox.Show("The message cant be longer than 1029 characters, try again!.");
+                    return;
+                }
+
+                if (mail_subject == null)
+                {
+                    MessageBox.Show("The Subject cant be empty, for a significant incident report the subject must be 'SIR'");
+                    return;
+                }
+
+
+               
+
                 //  msgs = Serializing(msgs);
+
+
 
                 msgs.Add(new AllMessages()
                 {
@@ -267,18 +348,13 @@ namespace NapierBankService
 
                     Email_subject = newsms.Email_subject(mail_subject, "E"),
 
-                    Email_address = newsms.Email_address(user, "E"),
-
-                    Sc1 = newsms.Sort1(SC1, "E"),
-                    Sc2 = newsms.Sort2(SC2, "E"),
-                    Sc3 = newsms.Sort3(SC3, "E"),
-
-                    Date = newsms.Datepicker(DATEPICKER, "E")
-
+                    Email_address = newsms.Email_address(user, "E"),              
 
                 });
 
-                MessageBox.Show("Enail Sent!");
+                MessageBox.Show("STANDARD EMAIL MESSAGE SENT!");
+
+                
 
 
                 // URLs 
@@ -294,73 +370,143 @@ namespace NapierBankService
 
 
 
+                
+            }
 
-                if (mail_subject.Contains("SIR"))
+
+
+
+            // check nature of incident
+
+            Boolean found = false;
+
+            List<string> incidentList = new List<string>();
+
+            incidentList.Add("cash loss");
+            incidentList.Add("bomb threat");
+            incidentList.Add("staff attack");
+            incidentList.Add("atmtheft");
+            incidentList.Add("suspicious incident");
+            incidentList.Add("customer attack");
+            incidentList.Add("staff abuse");
+            incidentList.Add("terrorism");
+            incidentList.Add("theft");
+            incidentList.Add("intelligence");
+            incidentList.Add("raid");
+            incidentList.Add("Cash loss");
+            incidentList.Add("Bomb threat");
+            incidentList.Add("Staff attack");
+            incidentList.Add("Atm theft");
+            incidentList.Add("Suspicious incident");
+            incidentList.Add("Customer attack");
+            incidentList.Add("Staff abuse");
+            incidentList.Add("Terrorism");
+            incidentList.Add("Theft");
+            incidentList.Add("Intelligence");
+            incidentList.Add("Raid");
+
+          
+           
+
+            //Significant incident report check.
+            if (mail_subject.Contains("SIR") || mail_subject.Contains("sir") || mail_subject.Contains("SIGNIFICANT INCIDENT REPORTS") || mail_subject.Contains("Sir")) 
+            {
+
+               
+
+                if (SC1.Length > 2 || SC2.Length > 2 || SC3.Length > 2 )                  
+                {
+                    MessageBox.Show("The Sort Code can´t be longer than 2 characters, example (99-99-99), you need to enter 2 numbers on each text box, try again:)");
+                    return;
+
+                }
+
+                
+                if (!CheckDigits(SC1) || !CheckDigits(SC2) || !CheckDigits(SC3))
                 {
 
-                    // check nature of incident
+                    MessageBox.Show("For sending an significant incident report you must fill up the sort code(only numbers accepted) boxes and enter a date of incident, and the subject must be 'SIR', 'sir', 'SIGNIFICANT INCIDENT REPORTS' or  'Sir' .");
+                    return;
+                }
+                
 
-                    Boolean found = false;
+                if (SC1.Length == 0 || SC2.Length == 0 || SC3.Length == 0 || DATEPICKER == null || SC1.Length < 2 || SC2.Length < 2|| SC3.Length < 2)
+                {
 
-                    List<string> incidentList = new List<string>();
 
-                    incidentList.Add("cash loss");
-                    incidentList.Add("bomb threat");
-                    incidentList.Add("staff attack");
-                    incidentList.Add("atmtheft");
-                    incidentList.Add("suspicious incident");
-                    incidentList.Add("customer attack");
-                    incidentList.Add("staff abuse");
-                    incidentList.Add("terrorism");
-                    incidentList.Add("theft");
-                    incidentList.Add("intelligence");
-                    incidentList.Add("raid");
-                    incidentList.Add("Cash loss");
-                    incidentList.Add("Bomb threat");
-                    incidentList.Add("Staff attack");
-                    incidentList.Add("Atm theft");
-                    incidentList.Add("Suspicious incident");
-                    incidentList.Add("Customer attack");
-                    incidentList.Add("Staff abuse");
-                    incidentList.Add("Terrorism");
-                    incidentList.Add("Theft");
-                    incidentList.Add("Intelligence");
-                    incidentList.Add("Raid");
 
-                   
+                    MessageBox.Show("For sending an significant incident report you must fill up the sort code(only numbers accepted) boxes and enter a date of incident, and the subject must be 'SIR', 'sir', 'SIGNIFICANT INCIDENT REPORTS' or  'Sir' .");
+                    main.Show();
+                    Close();
+
+
+
+
+
+
+                }
+                else
+                {
+
+                    msgs.Add(new AllMessages()
+                    {
+                        ID = newsms.Generator_Id("E"),
+
+                        Message = newsms.Email_message(message, "E"),
+
+                        Email_subject = newsms.Email_subject(mail_subject, "E"),
+
+                        Email_address = newsms.Email_address(user, "E"),
+
+                        Sc1 = newsms.SC1(SC1, "E"),
+                        Sc2 = newsms.SC2(SC2, "E"),
+                        Sc3 = newsms.SC3(SC3, "E"),
+
+                        Date = newsms.Datepicker(DATEPICKER, "E")
+
+
+                    });
+
+
+                    //Each time there is an inccident from the list on the message it will print all the data on the SIR list.
                     foreach (string incident in incidentList)
                     {
-                        if (message.Contains(incident))
-                        {
 
-                            string letter = (((incident).Split(',')[0]).ToLower());
+                        string letter = (((incident).Split(',')[0]).ToLower());
 
-                            letter = Regex.Replace(letter, @"\s+", "");
+                        letter = Regex.Replace(letter, @"\s+", "");
 
 
-                            LIST_SIR.Add(incident, message);
-                            list_SIR.Items.Add("Date: " + DATEPICKER + ", Sort Code: " + SC1 + "," + SC2 + "," + SC3 + ". Nature of Incident: " + incident);
-                            found = true;
+                        LIST_SIR.Add(message);
+                        list_SIR.Items.Add("Date: " + DATEPICKER + ", Sort Code: " + SC1 + "," + SC2 + "," + SC3 + ". Nature of Incident: " + incident);
+                        found = true;
 
-                        }
                     }
                     if (!found)
                         MessageBox.Show("Nature of incident not found.");
 
-                }else if (sc1_txtbox == null)
-                {
-                    MessageBox.Show("Sort Code Empty.");
+
+                   
+
                 }
 
 
 
-            }
-            else if (message.Length > 1029)
-            {
 
-                MessageBox.Show("Empty box, try again!.");
+                
+
+                
+
+
             }
 
+
+
+           
+          
+
+     
+           
 
             if (msgs != null)
             {
@@ -380,12 +526,21 @@ namespace NapierBankService
             string serialize = JsonConvert.SerializeObject(msgs.ToArray(), Formatting.Indented);
             string serializetxt = JsonConvert.SerializeObject(msgs.ToArray() + "\n");
 
-            File.WriteAllText(@"../../../Json_data.json", serialize);
-            File.WriteAllText(txtFile3, serializetxt + "\n");
+            File.WriteAllText(jsonFile3, serialize);
+            File.WriteAllText(txtFile3, serializetxt);
 
         }
 
+        bool CheckDigits(string str)
+        {
+            foreach (char d in str)
+            {
+                if (d < '0' || d > '9')
+                    return false;
+            }
 
+            return true;
+        }
 
         private void Button_Click(object sender, RoutedEventArgs e)
         {
@@ -442,6 +597,10 @@ namespace NapierBankService
                                     header_txtblock.Text = data.ID;
                                     body_txtbox.Text = data.Message;
                                     user_txtbox.Text = data.Sms_Phone;
+                                    subject_txtbox.Text = " ";
+                                    sc1_txtbox.Text = " ";
+                                    sc2_txtbox.Text = " ";
+                                    sc3_txtbox.Text = " ";
 
 
 
@@ -469,6 +628,10 @@ namespace NapierBankService
                                     header_txtblock.Text = data.ID;
                                     body_txtbox.Text = data.Message;
                                     user_txtbox.Text = data.Twitter_User;
+                                    subject_txtbox.Text = " ";
+                                    sc1_txtbox.Text = " ";
+                                    sc2_txtbox.Text = " ";
+                                    sc3_txtbox.Text = " ";
 
                                 }
 
@@ -495,6 +658,14 @@ namespace NapierBankService
                                     user_txtbox.Text = data.Email_address;
                                     subject_txtbox.Text = data.Email_subject;
                                     body_txtbox.Text = data.Message;
+
+                                    if (subject_txtbox.Text.Contains("SIR") || subject_txtbox.Text.Contains("sir") || subject_txtbox.Text.Contains("SIGNIFICANT INCIDENT REPORTS") || subject_txtbox.Text.Contains("Sir"))
+                                    {
+                                        sc1_txtbox.Text = data.Sc1;
+                                        sc2_txtbox.Text = data.Sc2;
+                                        sc3_txtbox.Text = data.Sc3;
+
+                                    }
 
                                 }
                             }
@@ -532,8 +703,8 @@ namespace NapierBankService
             {
                 if (word.StartsWith("http:") || word.StartsWith("https:"))
                 {
-                    string newM = phrase.Replace(word, "<URL Quarantined>");
-                    phrase = newM;
+                    string f = phrase.Replace(word, "<URL Quarantined>");
+                    phrase = f;
                     foreach (string word1 in (phrase).Split(' '))
                     {
                         if (!List_QUAR.Contains(word))
@@ -725,6 +896,7 @@ namespace NapierBankService
                             sc2_txtbox.Text = message.Sc2;
                             sc3_txtbox.Text = message.Sc3;
                             date_sir.Text = message.Date;
+                         
 
 
                             break;

@@ -132,7 +132,7 @@ namespace NapierBankService
 
         }
 
-
+     
 
 
 
@@ -182,11 +182,11 @@ namespace NapierBankService
             }
         }
 
-        public string Sort1(string s1, string letter)
+        public string SC1(string sc1,string letter)
         {
             if (letter == "E")
-            {
-                string sir = s1;
+            { 
+                string sir = sc1;
                 return sir;
             }
             else
@@ -195,33 +195,34 @@ namespace NapierBankService
             }
         }
 
-
-        public string Sort2(string s2, string letter)
-        {
+          public string SC2(string sc2,string letter)
+          {
             if (letter == "E")
-            {
-                string sir = s2;
+            { 
+                string sir = sc2;
                 return sir;
             }
             else
             {
                 return "Incorrect format.";
             }
-        }
+          }
 
-        public string Sort3(string s3, string letter)
-        {
+
+          public string SC3(string sc3,string letter)
+          {
             if (letter == "E")
-            {
-                string sir = s3;
+            { 
+                string sir = sc3;
                 return sir;
             }
             else
             {
                 return "Incorrect format.";
             }
-        }
+          }
 
+   
 
 
     }
