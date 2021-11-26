@@ -1,5 +1,4 @@
 ﻿using Microsoft.Win32;
-using NapierBankService.BussinesLayer;
 using NapierBankService.DataLayer;
 using Newtonsoft.Json;
 using System;
@@ -21,30 +20,27 @@ using System.Windows.Shapes;
 
 namespace NapierBankService
 {
-    /// <summary>
-    /// Interaction logic for MainWindow.xaml
-    /// </summary>
+    /*
+  * Author: Carlos Jimenez Rodriguez, 40452913
+  * Description of class: Main method, which is recognising the type of input whether SMS,EMAIL OR TWITTER.
+  * Date last modified: 26/11/2021
+  */
+
     public partial class MainWindow : Window
     {
 
 
 
-
+        //List for the mention,hastaghs, URLS and SIR, for showing the data on the Listbox on MainWindow.xaml
         List<string> mentions = new List<string>();
         List<string> hashtags = new List<string>();
-        List<AllMessages> output = new List<AllMessages>();
-        List<AllMessages> input = new List<AllMessages>();
         List<string> List_QUAR = new List<string>();
         List<string> LIST_SIR = new List<string>();
 
-        //AllMessages message = new AllMessages();
-
-
-        SendTWEET tweet = new SendTWEET();
-        SendSMS sms = new SendSMS();
-        AllMessages allmsg = new AllMessages();
+        //Saving the inputs of the messages.
+        List<AllMessages> input = new List<AllMessages>();        
         List<AllMessages> msgs = new List<AllMessages>();
-        List<string> incidentList = new List<string>();
+        AllMessages allmsg = new AllMessages();
         generate newsms = new generate();
 
 
@@ -55,15 +51,26 @@ namespace NapierBankService
 
             InitializeComponent();
 
+            //Desserializing the json file.
             msgs = outputFile(msgs);
 
-            emptyJson();
+
+            //Bringing to the ListBoxes the mention, hashtaghs, and messages ID.
+            if (mentions != null)
+            {
+                foreach (var Mention in mentions)
+                {
+
+                    mention_list.Items.Add(Mention);
+                }
+
+
+            }
 
             foreach (var Hastaghs in hashtags)
             {
                 hashtag_list.Items.Add(Hastaghs);
             }
-
 
             if (msgs != null)
             {
@@ -73,29 +80,12 @@ namespace NapierBankService
                     // msgs = Serializing(msgs);
                     data_listbox.Items.Add(Data.ID);
                 }
-            }
-
-            if (mentions != null) {
-                foreach (var Mention in mentions)
-                {
-
-                    mention_list.Items.Add(Mention);
-                }
-
-               
-            }
-
-           
-
-                        
-                    
-                
-            
-
-
+            }  
+                     
+ 
         }
 
-
+        //Deserialize the json file to get the data.
         static List<AllMessages> outputFile(List<AllMessages> msgs)
         {
 
@@ -107,44 +97,20 @@ namespace NapierBankService
                 return ALLDATA;
             }
             return null;
-        }
+            string FileNametxt = @"../../../Json_data.txt";
 
-        private void emptyJson()
-        {
-            //call file name
-            // check if is empty, and if is empty input a []
-
-            List<AllMessages> msgs = new List<AllMessages>();
-
-                string fileName = @"../../../Json_data.json";
-                string fileNameTXT = @"../../../Json_data.txt";
-           
-
-                if (File.Exists(fileName))
+            if (File.Exists(FileNametxt))
             {
-                var ALLDATA = JsonConvert.SerializeObject(File.ReadAllText(fileName));
-                
-
-                    while (ALLDATA.Equals(""))
-                {
-                    File.WriteAllText(fileName , "[]");
-                    File.WriteAllText(fileNameTXT, "[]");
-                }
+                var ALLDATA2 = JsonConvert.DeserializeObject<List<AllMessages>>(File.ReadAllText(fileName));
+                return ALLDATA2;
             }
-            
-
-
-
-
+            return null;
         }
 
 
+        //This button is the main button which does all the job, 
         private void send_btn_Click(object sender, RoutedEventArgs e)
-        {
-
-
-            
-
+        {          
             string user = user_txtbox.Text;
             string message = body_txtbox.Text;
             string mail_subject = subject_txtbox.Text;
@@ -156,14 +122,11 @@ namespace NapierBankService
 
             MainWindow main = new MainWindow();
 
-
-           
-
+       
 
 
 
-
-
+            //In case of an SIR wrong input.
             if (!user.StartsWith("@") && !user.StartsWith("+") && mail_subject.Contains("SIR") && mail_subject.Contains("sir"))
             {
                 
@@ -254,13 +217,11 @@ namespace NapierBankService
 
             }
            
-
-
             //SENDING SMS AND ADDING IT TO THE JSON LIST.
             if (user.StartsWith("+"))
             {
 
-                // Checking for any abbreviation calling the class made, which is checking for any.
+                // Checking for any abbreviation calling the class made'ChoseAbvs', which is checking for any.
                 ChoseAbvs abvs = new ChoseAbvs();
                 string addabv = abvs.main(message);
                 message = addabv;
@@ -284,7 +245,7 @@ namespace NapierBankService
 
                     });
 
-
+                   
 
                     MessageBox.Show("SMS Sent!");
                     if (msgs != null)
@@ -300,20 +261,7 @@ namespace NapierBankService
 
                 }
             }
-
-
-
-
-
-
-
-
-
-
-
-           
-
-
+                              
             //SENDING EMAILS (STANDARD EMAIL MESSAGES & SIGNIFICANT INCIDENT REPORTS.)
             if (user.Contains("@") && mail_subject != "" && !user.StartsWith("@") && !mail_subject.Contains("SIR"))
             {
@@ -371,8 +319,6 @@ namespace NapierBankService
 
                 
             }
-
-
 
 
             //Nature of Incident list.
@@ -478,6 +424,7 @@ namespace NapierBankService
                        
 
                     }
+                    //If the nature of incident is not found on the list.
                     if (!found)
                         MessageBox.Show("Nature of incident not found on the list :( ");
 
@@ -509,7 +456,7 @@ namespace NapierBankService
             // Writing the inputs to the json file.
             string jsonFile3 = @"../../../Json_data.json";
             string txtFile3 = @"../../../Json_data.txt";
-
+      
             string serialize = JsonConvert.SerializeObject(msgs.ToArray(), Formatting.Indented);
             string serializetxt = JsonConvert.SerializeObject(msgs.ToArray() + "\n");
 

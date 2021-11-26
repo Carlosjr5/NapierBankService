@@ -6,34 +6,38 @@ using System.Text.RegularExpressions;
 
 namespace NapierBankService
 {
+    /*
+    * Author: Carlos Jimenez Rodriguez, 40452913
+    * Description of class: In this class I am saving the inputs for later, save it on lists, and print it back.
+    * Date last modified: 26/11/2021
+    */
     class AllMessages
     {
+
         private string id;
         private string message;
         private string twitter_user;
         private string sms_phone;
         private string email_address;
         private string email_subject;
+
+
         public string Sc1 { get; set; }
         public string Sc2 { get; set; }
         public string Sc3 { get; set; }
         public string Date { get; set; }
-
 
         public string ID
         {
             get { return id; }
             set
             {
-                // if the id is 10 chars long (1 letter and 9 numbers) and the other 9 are numbers
+               //ID 9 numbers starting with the letter or the message S,E OR T.
                 if((value.Length == 10) && (int.TryParse((value.Remove(0, 1)), out int k)))
                 {
                     id = value.ToUpper();
                 }
-                else
-                {
-                    throw new ArgumentException("ID is not written in the correct format: 'S','E' or 'T' followed by 9 numeric characters");
-                }
+              
             }
         }
         public string Message
@@ -51,8 +55,6 @@ namespace NapierBankService
 
             }
         }
-
-
 
         public string Twitter_User
         {
@@ -97,7 +99,5 @@ namespace NapierBankService
             }
         }
        
-
-
     }
 }
