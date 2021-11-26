@@ -5,18 +5,9 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Text;
 using System.Text.RegularExpressions;
-using System.Threading.Tasks;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 
 namespace NapierBankService
 {
@@ -40,7 +31,7 @@ namespace NapierBankService
         List<string> LIST_SIR = new List<string>();
 
         //Saving the inputs of the messages.
-        List<AllMessages> input = new List<AllMessages>();        
+        List<AllMessages> input = new List<AllMessages>();
         List<AllMessages> msgs = new List<AllMessages>();
         AllMessages allmsg = new AllMessages();
         generate newsms = new generate();
@@ -53,9 +44,9 @@ namespace NapierBankService
 
             InitializeComponent();
 
-            //Desserializing the json file.
+            //Desserializing the json file.           
             msgs = outputFile(msgs);
-                     
+
 
 
             //Bringing to the ListBoxes the mention, hashtaghs, and messages ID.
@@ -87,9 +78,9 @@ namespace NapierBankService
                     // msgs = Serializing(msgs);
                     data_listbox.Items.Add(Data.ID);
                 }
-            }  
-                     
- 
+            }
+
+
         }
 
         //Deserialize the json file to get the data.
@@ -104,20 +95,13 @@ namespace NapierBankService
                 return ALLDATA;
             }
             return null;
-            string FileNametxt = @"../../../Json_data.txt";
-
-            if (File.Exists(FileNametxt))
-            {
-                var ALLDATA2 = JsonConvert.DeserializeObject<List<AllMessages>>(File.ReadAllText(fileName));
-                return ALLDATA2;
-            }
-            return null;
+           
         }
 
 
         //This button is the main button which does all the job, 
         private void send_btn_Click(object sender, RoutedEventArgs e)
-        {          
+        {
             string user = user_txtbox.Text;
             string message = body_txtbox.Text;
             string mail_subject = subject_txtbox.Text;
@@ -129,20 +113,20 @@ namespace NapierBankService
 
             MainWindow main = new MainWindow();
 
-       
+
 
 
 
             //In case of an SIR wrong input.
             if (!user.StartsWith("@") && !user.StartsWith("+") && mail_subject.Contains("SIR") && mail_subject.Contains("sir"))
             {
-                
-                    MessageBox.Show("Incorrect format! \n For Twitter, Sender has to start with '@', followed by the twitter name," +
-                        "                              \n  For SMS, has to start with '+' followed by the country code and the phone number," +
-                        "                              \n  For Standard email just the normall email, a subject and the message, " +
-                        "                              \n  For SIGNIFICANT INCIDENT REPORTS, subject have to be SIR, fill up all the boxes, now try again! :)" + MessageBoxImage.Information);
+
+                MessageBox.Show("Incorrect format! \n For Twitter, Sender has to start with '@', followed by the twitter name," +
+                    "                              \n  For SMS, has to start with '+' followed by the country code and the phone number," +
+                    "                              \n  For Standard email just the normall email, a subject and the message, " +
+                    "                              \n  For SIGNIFICANT INCIDENT REPORTS, subject have to be SIR, fill up all the boxes, now try again! :)" + MessageBoxImage.Information);
                 return;
-                
+
             }
 
             //SENDING TWEETS AND ADDING IT TO THE JSON FILE.
@@ -206,7 +190,7 @@ namespace NapierBankService
                                 hashtags.Add(word);
                                 hashtag_list.Items.Add(word);
                             }
-                          
+
                         }
                     }
                 }
@@ -223,7 +207,7 @@ namespace NapierBankService
 
 
             }
-           
+
             //SENDING SMS AND ADDING IT TO THE JSON LIST.
             if (user.StartsWith("+"))
             {
@@ -252,7 +236,7 @@ namespace NapierBankService
 
                     });
 
-                   
+
 
                     MessageBox.Show("SMS Sent!");
                     if (msgs != null)
@@ -268,7 +252,7 @@ namespace NapierBankService
 
                 }
             }
-                              
+
             //SENDING EMAILS (STANDARD EMAIL MESSAGES & SIGNIFICANT INCIDENT REPORTS.)
             if (user.Contains("@") && mail_subject != "" && !user.StartsWith("@") && !mail_subject.Contains("SIR"))
             {
@@ -288,7 +272,7 @@ namespace NapierBankService
                 }
 
 
-               
+
 
                 //  msgs = Serializing(msgs);
 
@@ -302,7 +286,7 @@ namespace NapierBankService
 
                     Email_subject = newsms.Email_subject(mail_subject, "E"),
 
-                    Email_address = newsms.Email_address(user, "E"),              
+                    Email_address = newsms.Email_address(user, "E"),
 
                 });
 
@@ -324,7 +308,7 @@ namespace NapierBankService
 
 
 
-                
+
             }
 
 
@@ -358,27 +342,27 @@ namespace NapierBankService
             incidentList.Add("Intelligence");
             incidentList.Add("Raid");
 
-          
-           
+
+
 
             //Significant incident report check.
-            if (mail_subject.Contains("SIR") || mail_subject.Contains("sir") || mail_subject.Contains("SIGNIFICANT INCIDENT REPORTS") || mail_subject.Contains("Sir")) 
+            if (mail_subject.Contains("SIR") || mail_subject.Contains("sir") || mail_subject.Contains("SIGNIFICANT INCIDENT REPORTS") || mail_subject.Contains("Sir"))
             {
 
-               
 
-              
 
-                
-                if (CheckDigits(SC1)  == false|| CheckDigits(SC2) == false || CheckDigits(SC3) == false)
+
+
+
+                if (CheckDigits(SC1) == false || CheckDigits(SC2) == false || CheckDigits(SC3) == false)
                 {
 
                     MessageBox.Show("111111111111  For sending an significant incident report you must fill up the sort code(only numbers accepted) boxes and enter a date of incident, and the subject must be 'SIR', 'sir', 'SIGNIFICANT INCIDENT REPORTS' or  'Sir' .");
                     return;
                 }
-                
 
-                if (SC1.Length == 0 || SC2.Length == 0 || SC3.Length == 0 || DATEPICKER == null || SC1.Length < 2 || SC2.Length < 2|| SC3.Length < 2)
+
+                if (SC1.Length == 0 || SC2.Length == 0 || SC3.Length == 0 || DATEPICKER == null || SC1.Length < 2 || SC2.Length < 2 || SC3.Length < 2)
                 {
 
 
@@ -388,47 +372,47 @@ namespace NapierBankService
                     Close();
 
                 }
-             
-             
-                    //Getting and setting the inputs on the strings with their correspondent letter.
-                    msgs.Add(new AllMessages()
+
+
+                //Getting and setting the inputs on the strings with their correspondent letter.
+                msgs.Add(new AllMessages()
+                {
+                    ID = newsms.Generator_Id("E"),
+
+                    Message = newsms.Email_message(message, "E"),
+
+                    Email_subject = newsms.Email_subject(mail_subject, "E"),
+
+                    Email_address = newsms.Email_address(user, "E"),
+
+                    Sc1 = newsms.SC1(SC1, "E"),
+                    Sc2 = newsms.SC2(SC2, "E"),
+                    Sc3 = newsms.SC3(SC3, "E"),
+
+                    Date = newsms.Datepicker(DATEPICKER, "E")
+
+
+                });
+
+                //Each time there is an inccident from the list on the message it will print all the data on the SIR list.
+                foreach (string incident in incidentList)
+                {
+
+                    string letter = (((message).Split(',')[0]).ToLower());
+                    letter = Regex.Replace(letter, @"\s+", "");
+
+                    if (letter.Equals(incident))
                     {
-                        ID = newsms.Generator_Id("E"),
-
-                        Message = newsms.Email_message(message, "E"),
-
-                        Email_subject = newsms.Email_subject(mail_subject, "E"),
-
-                        Email_address = newsms.Email_address(user, "E"),
-
-                        Sc1 = newsms.SC1(SC1, "E"),
-                        Sc2 = newsms.SC2(SC2, "E"),
-                        Sc3 = newsms.SC3(SC3, "E"),
-
-                        Date = newsms.Datepicker(DATEPICKER, "E")
-
-
-                    });
-
-                    //Each time there is an inccident from the list on the message it will print all the data on the SIR list.
-                    foreach (string incident in incidentList)
-                    {
-
-                        string letter = (((message).Split(',')[0]).ToLower());
-                        letter = Regex.Replace(letter, @"\s+", "");
-
-                        if (letter.Equals(incident))
-                        {
-                            LIST_SIR.Add(message);
-                            list_SIR.Items.Add("Date: " + DATEPICKER + ", Sort Code: " + SC1 + "," + SC2 + "," + SC3 + ". Nature of Incident: " + incident);
-                            found = true;
-                        }
-                       
-
+                        LIST_SIR.Add(message);
+                        list_SIR.Items.Add("Date: " + DATEPICKER + ", Sort Code: " + SC1 + "," + SC2 + "," + SC3 + ". Nature of Incident: " + incident);
+                        found = true;
                     }
-                    //If the nature of incident is not found on the list.
-                    if (!found)
-                        MessageBox.Show("Nature of incident not found on the list :( ");
+
+
+                }
+                //If the nature of incident is not found on the list.
+                if (!found)
+                    MessageBox.Show("Nature of incident not found on the list :( ");
 
 
 
@@ -452,13 +436,11 @@ namespace NapierBankService
 
             // Writing the inputs to the json file.
             string jsonFile3 = @"../../../Json_data.json";
-            string txtFile3 = @"../../../Json_data.txt";
-      
+           
+
             string serialize = JsonConvert.SerializeObject(msgs.ToArray(), Formatting.Indented);
-            string serializetxt = JsonConvert.SerializeObject(msgs.ToArray() + "\n");
 
             File.WriteAllText(jsonFile3, serialize);
-            File.WriteAllText(txtFile3, serializetxt);
 
         }
 
@@ -474,169 +456,7 @@ namespace NapierBankService
             return true;
         }
 
-        //Uploading a file to the listbox.
-        private void Button_Click(object sender, RoutedEventArgs e)
-        {
-            try
-            {
-                OpenFileDialog fileDialog = new OpenFileDialog();
-                if (fileDialog.ShowDialog() == true)
-                {
-                    string find = System.IO.Path.GetExtension(fileDialog.FileName);
-
-                    if (find.Equals(".json"))
-                    {
-                        System.IO.StreamReader fileJson = new System.IO.StreamReader(fileDialog.FileName);
-
-                        string lineJson = "";
-                        string tempObj = "";
-
-
-
-                        while ((lineJson = fileJson.ReadLine()) != null)
-                        {
-                            string[] objects = lineJson.Split('}');
-
-                            Array.Resize(ref objects, objects.Length - 1);
-
-                            foreach (string obj in objects)
-                            {
-                                if (obj == String.Empty)
-                                    break;
-
-
-
-                                string all = obj.Substring(obj.IndexOf("")); // id and Message                          
-                                string id = all.Split(',')[0]; // id
-                                tempObj = (obj + "}").Remove(0, 1); // THE JSON STRING                             
-
-
-
-                                if (Regex.IsMatch(id, "S"))
-                                {
-                                    AllMessages data = JsonConvert.DeserializeObject<AllMessages>(tempObj);
-
-                                    allmsg.ID = data.ID;
-                                    allmsg.Message = data.Message;
-
-                                    //Adding item Message ID to a list.
-                                    data_listbox.Items.Add(data.ID);
-                                    input.Add(data);
-                               
-
-                                    // displaying information.
-                                    header_txtblock.Text = data.ID;
-                                    body_txtbox.Text = data.Message;
-                                    user_txtbox.Text = data.Sms_Phone;
-                                    subject_txtbox.Text = " ";
-                                    sc1_txtbox.Text = " ";
-                                    sc2_txtbox.Text = " ";
-                                    sc3_txtbox.Text = " ";
-
-
-
-                                }
-                                else if (Regex.IsMatch(id, "T"))
-                                {
-
-                                    AllMessages data = JsonConvert.DeserializeObject<AllMessages>(tempObj);
-
-
-                                    allmsg.ID = data.ID;
-                                    allmsg.Message = data.Message;
-                                    //  allmsg.twitter_username = twt.twitter_username;
-
-
-                                    //Adding item Message ID to a list.
-                                    data_listbox.Items.Add(data.ID);
-                                    input.Add(data);
-
-
-
-                                    // displaying information.
-                                    header_txtblock.Text = data.ID;
-                                    body_txtbox.Text = data.Message;
-                                    user_txtbox.Text = data.Twitter_User;
-                                    subject_txtbox.Text = " ";
-                                    sc1_txtbox.Text = " ";
-                                    sc2_txtbox.Text = " ";
-                                    sc3_txtbox.Text = " ";
-
-                                }
-
-                                else if (Regex.IsMatch(id, "E"))
-                                {
-
-                                    AllMessages data = JsonConvert.DeserializeObject<AllMessages>(tempObj);
-
-
-                                    allmsg.ID = data.ID;
-                                    allmsg.Message = data.Message;
-                                    // mail.email_subject = mails.email_subject;
-                                    //  mail.email_message = mails.email_message;
-
-
-                                    data_listbox.Items.Add(data.ID);
-
-
-
-                                    input.Add(data);
-
-                                    // displaying information.
-                                    header_txtblock.Text = data.ID;
-                                    user_txtbox.Text = data.Email_address;
-                                    subject_txtbox.Text = data.Email_subject;
-                                    body_txtbox.Text = data.Message;
-
-                                    if (subject_txtbox.Text.Contains("SIR") || subject_txtbox.Text.Contains("sir") || subject_txtbox.Text.Contains("SIGNIFICANT INCIDENT REPORTS") || subject_txtbox.Text.Contains("Sir"))
-                                    {
-                                        sc1_txtbox.Text = data.Sc1;
-                                        sc2_txtbox.Text = data.Sc2;
-                                        sc3_txtbox.Text = data.Sc3;
-
-                                    }
-
-                                }
-                            }
-                        }
-                    }
-                    else if (find.Equals(".txt"))
-                    {
-                        File.ReadAllText(fileDialog.FileName);
-
-                        foreach (string line in File.ReadAllLines(fileDialog.FileName))
-                        {
-
-                            txt_list.Items.Add(line);
-
-                        }
-                    }
-                    else if (find.Equals(".json"))
-                    {
-                        File.ReadAllText(fileDialog.FileName);
-
-                        foreach (string line in File.ReadAllLines(fileDialog.FileName))
-                        {
-
-                            data_listbox.Items.Add(line);
-
-                        }
-                    }
-
-
-
-                }
-                else
-                {
-                    MessageBox.Show("Your file is empty.");
-                }
-            }
-            catch (Exception a)
-            {
-                MessageBox.Show(a.Message);
-            }
-        }
-
+        
         //URL List uploading it.
         private string URL_QUARANTINED(string phrase)
         {
@@ -665,7 +485,7 @@ namespace NapierBankService
         private void ChoseItem(object sender, MouseButtonEventArgs e)
         {
 
-            
+
             try
             {
                 //reads the ID´S.
@@ -682,86 +502,7 @@ namespace NapierBankService
                         // depending on type, select process
                         if (message.ID[0].Equals('S'))
                         {
-                            
 
-
-                            body_txtbox.Text = message.Message;
-                            header_txtblock.Text = message.ID;
-                            user_txtbox.Text = message.Sms_Phone;
-                            subject_txtbox.Text = " ";
-                            sc1_txtbox.Text = " ";
-                            sc2_txtbox.Text = " ";
-                            sc3_txtbox.Text = " ";
-                            date_sir.Text = " ";
-
-
-
-
-                            break;
-
-                        }
-                        else if (message.ID[0].Equals('E'))
-                        {
-
-                            body_txtbox.Text = message.Message;
-                            header_txtblock.Text = message.ID;
-                            user_txtbox.Text = message.Email_address;
-                            subject_txtbox.Text = message.Email_subject;
-                            sc1_txtbox.Text = message.Sc1;
-                            sc2_txtbox.Text = message.Sc2;
-                            sc3_txtbox.Text = message.Sc3;
-                            date_sir.Text = message.Date;
-                         
-
-
-                            break;
-                        }
-
-                        else if (message.ID[0].Equals('T'))
-                        {
-                          
-                            body_txtbox.Text = message.Message;
-                            header_txtblock.Text = message.ID;
-                            user_txtbox.Text = message.Twitter_User;
-                            subject_txtbox.Text = "";
-                            sc1_txtbox.Text = " ";
-                            sc2_txtbox.Text = " ";
-                            sc3_txtbox.Text = " ";
-                            date_sir.Text = " ";
-
-                            break;
-                        }
-                    }
-
-                }
-            }
-            catch (Exception b)
-            {
-                MessageBox.Show(b.Message);
-            }
-
-
-        }
-
-        private void TxtItem(object sender, MouseButtonEventArgs e)
-        {
-            try
-            {
-                //reads the ID´S.
-                string line = Convert.ToString(txt_list.SelectedItem);
-
-                // search for object with that id in data in
-                foreach (AllMessages message in msgs)
-                {
-
-
-
-                    if (line.Equals(message.ID))
-                    {
-                        // depending on type, select process
-                        if (message.ID[0].Equals('S'))
-                        {
-                            
 
 
                             body_txtbox.Text = message.Message;
@@ -792,12 +533,13 @@ namespace NapierBankService
                             date_sir.Text = message.Date;
 
 
+
                             break;
                         }
 
                         else if (message.ID[0].Equals('T'))
                         {
-                          
+
                             body_txtbox.Text = message.Message;
                             header_txtblock.Text = message.ID;
                             user_txtbox.Text = message.Twitter_User;
@@ -819,8 +561,9 @@ namespace NapierBankService
             }
 
 
-
         }
+
+
     }
 }
 

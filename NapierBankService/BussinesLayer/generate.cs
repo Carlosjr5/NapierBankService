@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace NapierBankService
 {
@@ -183,10 +181,10 @@ namespace NapierBankService
             }
         }
 
-        public string SC1(string sc1,string letter)
+        public string SC1(string sc1, string letter)
         {
             if (letter == "E")
-            { 
+            {
                 string sir = sc1;
                 return sir;
             }
@@ -196,10 +194,10 @@ namespace NapierBankService
             }
         }
 
-        public string SC2(string sc2,string letter)
-          {
+        public string SC2(string sc2, string letter)
+        {
             if (letter == "E")
-            { 
+            {
                 string sir = sc2;
                 return sir;
             }
@@ -207,12 +205,12 @@ namespace NapierBankService
             {
                 return "Incorrect format.";
             }
-          }
+        }
 
-        public string SC3(string sc3,string letter)
-          {
+        public string SC3(string sc3, string letter)
+        {
             if (letter == "E")
-            { 
+            {
                 string sir = sc3;
                 return sir;
             }
@@ -220,9 +218,9 @@ namespace NapierBankService
             {
                 return "Incorrect format.";
             }
-          }
+        }
 
-   
+
 
 
     }

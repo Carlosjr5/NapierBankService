@@ -1,8 +1,4 @@
 ﻿using NapierBankService.DataLayer;
-using System;
-using System.Collections.Generic;
-using System.Text;
-using System.Text.RegularExpressions;
 
 namespace NapierBankService
 {
@@ -32,12 +28,12 @@ namespace NapierBankService
             get { return id; }
             set
             {
-               //ID 9 numbers starting with the letter or the message S,E OR T.
-                if((value.Length == 10) && (int.TryParse((value.Remove(0, 1)), out int k)))
+                //ID 9 numbers starting with the letter or the message S,E OR T.
+                if ((value.Length == 10) && (int.TryParse((value.Remove(0, 1)), out int k)))
                 {
                     id = value.ToUpper();
                 }
-              
+
             }
         }
         public string Message
@@ -51,7 +47,7 @@ namespace NapierBankService
                 string addabv = abvs.main(message);
                 message = addabv;
                 message = value;
-            
+
 
             }
         }
@@ -62,19 +58,19 @@ namespace NapierBankService
 
             set
             {
-               
-                    twitter_user = value;
 
-                
+                twitter_user = value;
+
+
             }
-        }      
+        }
 
         public string Sms_Phone
         {
             get { return sms_phone; }
             set
-            {              
-               sms_phone = value;
+            {
+                sms_phone = value;
             }
 
         }
@@ -84,7 +80,7 @@ namespace NapierBankService
             get { return email_address; }
             set
             {
-               
+
                 email_address = value;
             }
         }
@@ -94,10 +90,10 @@ namespace NapierBankService
             get { return email_subject; }
             set
             {
-                    email_subject = value;
-                
+                email_subject = value;
+
             }
         }
-       
+
     }
 }
