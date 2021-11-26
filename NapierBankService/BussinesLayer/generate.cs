@@ -4,9 +4,17 @@ using System.Text;
 
 namespace NapierBankService
 {
+    /*
+ * Author: Carlos Jimenez Rodriguez, 40452913
+ * 
+ * Description of class: The purpose of this class is to generate a ramdom id, and save the phone, email address, twitter usernames,
+ * and each with their letter to save the message as the input of the Sender/Username.
+ * 
+ * Date last modified: 26/11/2021
+ */
     class generate
     {
-        //Generates new ID per each message.
+        //New ID each time there is a message
         public string Generator_Id(string type)
         {
             var random = new Random();
@@ -22,7 +30,7 @@ namespace NapierBankService
 
 
 
-
+        //Saving the Twitter user name with the letter.
         public string Twitter_username(string writter, string letter)
         {
             if (letter == "T")
@@ -40,7 +48,7 @@ namespace NapierBankService
 
 
 
-
+        //Twitter message with letter.
         public string Twitter_tweet(string message, string letter)
         {
             if (letter == "T")
@@ -55,7 +63,7 @@ namespace NapierBankService
 
         }
 
-
+        //SMS message with letter to save it as a sms
         public string SMS_type(string message, string letter)
         {
             if (letter == "S")
@@ -70,6 +78,7 @@ namespace NapierBankService
 
         }
 
+        //Phone number with the letter to save it as a sms
         public string SMS_type_PHONE(string phone_number, string letter)
         {
             if (letter == "S")
@@ -85,8 +94,7 @@ namespace NapierBankService
 
         }
 
-
-
+        //Email address of the user and Letter to save it as a email
         public string Email_address(string email_address, string letter)
         {
             if (letter == "E")
@@ -132,11 +140,6 @@ namespace NapierBankService
 
         }
 
-     
-
-
-
-
         public string Sir_email(string sir_message, string letter)
         {
             if (letter == "E")
@@ -150,8 +153,6 @@ namespace NapierBankService
             }
 
         }
-
-
 
         public string Sir_email_address(string sir_address, string letter)
         {
@@ -195,7 +196,7 @@ namespace NapierBankService
             }
         }
 
-          public string SC2(string sc2,string letter)
+        public string SC2(string sc2,string letter)
           {
             if (letter == "E")
             { 
@@ -208,8 +209,7 @@ namespace NapierBankService
             }
           }
 
-
-          public string SC3(string sc3,string letter)
+        public string SC3(string sc3,string letter)
           {
             if (letter == "E")
             { 

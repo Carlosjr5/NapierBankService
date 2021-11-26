@@ -21,8 +21,10 @@ using System.Windows.Shapes;
 namespace NapierBankService
 {
     /*
-  * Author: Carlos Jimenez Rodriguez, 40452913
+  * Author: Carlos Jimenez Rodriguez, 40452913@live.napier.ac.uk
+  * 
   * Description of class: Main method, which is recognising the type of input whether SMS,EMAIL OR TWITTER.
+  * 
   * Date last modified: 26/11/2021
   */
 
@@ -53,6 +55,7 @@ namespace NapierBankService
 
             //Desserializing the json file.
             msgs = outputFile(msgs);
+                     
 
 
             //Bringing to the ListBoxes the mention, hashtaghs, and messages ID.
@@ -60,11 +63,15 @@ namespace NapierBankService
             {
                 foreach (var Mention in mentions)
                 {
-
                     mention_list.Items.Add(Mention);
                 }
 
 
+            }
+
+            foreach (var incidents in LIST_SIR)
+            {
+                list_SIR.Items.Add(incidents);
             }
 
             foreach (var Hastaghs in hashtags)
@@ -360,18 +367,13 @@ namespace NapierBankService
 
                
 
-                if (SC1.Length > 2 || SC2.Length > 2 || SC3.Length > 2 || DATEPICKER == null || SC1.Length < 2 || SC2.Length < 2 || SC3.Length < 2)                  
-                {
-                    MessageBox.Show("The Sort Code can´t be longer than 2 characters, example (99-99-99), you need to enter 2 numbers on each text box, try again:)");
-                    return;
-
-                }
+              
 
                 
-                if (!CheckDigits(SC1) || !CheckDigits(SC2) || !CheckDigits(SC3))
+                if (CheckDigits(SC1)  == false|| CheckDigits(SC2) == false || CheckDigits(SC3) == false)
                 {
 
-                    MessageBox.Show("For sending an significant incident report you must fill up the sort code(only numbers accepted) boxes and enter a date of incident, and the subject must be 'SIR', 'sir', 'SIGNIFICANT INCIDENT REPORTS' or  'Sir' .");
+                    MessageBox.Show("111111111111  For sending an significant incident report you must fill up the sort code(only numbers accepted) boxes and enter a date of incident, and the subject must be 'SIR', 'sir', 'SIGNIFICANT INCIDENT REPORTS' or  'Sir' .");
                     return;
                 }
                 
@@ -437,11 +439,6 @@ namespace NapierBankService
             }
 
 
-
-
-
-
-
             if (msgs != null)
             {
                 data_listbox.Items.Clear();
@@ -465,6 +462,7 @@ namespace NapierBankService
 
         }
 
+        //Checking for digits for the sortcode inputs.
         bool CheckDigits(string str)
         {
             foreach (char d in str)
@@ -476,6 +474,7 @@ namespace NapierBankService
             return true;
         }
 
+        //Uploading a file to the listbox.
         private void Button_Click(object sender, RoutedEventArgs e)
         {
             try
@@ -638,8 +637,10 @@ namespace NapierBankService
             }
         }
 
+        //URL List uploading it.
         private string URL_QUARANTINED(string phrase)
         {
+            //Reading the line and looking if it contains any links, starting like http: or https:, and then saving it on the listbox.
             foreach (string word in phrase.Split(' '))
             {
                 if (word.StartsWith("http:") || word.StartsWith("https:"))
@@ -660,13 +661,11 @@ namespace NapierBankService
             return phrase;
         }
 
-  
-      
         //Looks for the json id and prints it back into the boxes.
         private void ChoseItem(object sender, MouseButtonEventArgs e)
         {
 
-
+            
             try
             {
                 //reads the ID´S.
